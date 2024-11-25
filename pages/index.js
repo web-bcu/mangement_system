@@ -1,8 +1,7 @@
 import Head from "next/head";
 import Layout from "../components/Layout";
-
+import { FinanceManagement } from "../data/NavBarData";
 export default function Home() {
-  console.log(FinanceManagement);
   return (
     <div className="">
       <Head>
