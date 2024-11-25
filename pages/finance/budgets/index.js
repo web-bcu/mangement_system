@@ -35,10 +35,9 @@ export default function Budget() {
     </div>
   );
 }
-const SearchBar = ()=> {
+const SearchBar = () => {
   return (
-    <div className="grid grid-cols-3 gap-4 mb-4">
-      
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
       <input
         type="text"
         placeholder="Search by Budget Code/Description"
@@ -48,21 +47,21 @@ const SearchBar = ()=> {
         <option>Select year</option>
         <option>2024</option>
         <option>2023</option>
-
       </select>
-      <div className="flex space-x-2">
-        <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition flex items-center space-x-2 ">
-          <Search size={15}/>
-          <span className="ml-2">Search</span> 
+      <div className="flex flex-col md:flex-row space-x-0 md:space-x-2">
+        <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition flex items-center space-x-2 mb-2 md:mb-0">
+          <Search size={15} />
+          <span className="ml-2">Search</span>
         </button>
         <button className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500 transition flex items-center space-x-2">
-          <X size={15}/>
-          <span className="ml-2">Reset</span> 
+          <X size={15} />
+          <span className="ml-2">Reset</span>
         </button>
       </div>
     </div>
   );
 }
+
 const Table = ()=> {
   
 
