@@ -45,7 +45,7 @@ const SearchBar = () => {
           <label htmlFor="search" className="block text-sm font-medium text-gray-700">Search</label>
           <input
             type="text"
-            placeholder="Search by PO Ref, Description"
+            placeholder="Search by BA Ref, Description"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500 w-full"
@@ -111,7 +111,7 @@ const SearchBar = () => {
           <span className="font-semibold">Add</span>
         </button>
         <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition">
-          <span className="font-semibold">Close multiple POs</span>
+          <span className="font-semibold">Close multiple BAs</span>
         </button>
       </div>
     </div>
@@ -126,7 +126,7 @@ const Table = ()=> {
   <table className="table-auto w-full text-sm text-left border-collapse border border-gray-300">
     <thead className="bg-gray-100">
       <tr>
-        <th className="border px-4 py-2">PO Number</th>
+        <th className="border px-4 py-2">BA Number</th>
         <th className="border px-4 py-2">Creation Date</th>
         <th className="border px-4 py-2">Created By</th>
         <th className="border px-4 py-2">Approved By</th>
