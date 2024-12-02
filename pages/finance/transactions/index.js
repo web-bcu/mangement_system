@@ -93,9 +93,9 @@ const SearchBar = () => {
             onChange={(e) => setSelectedStatus(e.target.value)}
             className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500 w-full"
           >
-            <option>Chooose</option>
-            <option>Active</option>
-            <option>Inactive</option>
+            <option>Choose</option>
+            <option>Pending</option>
+            <option>Paid</option>
           </select>
         </div>
       </div>
