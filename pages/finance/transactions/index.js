@@ -1,4 +1,4 @@
-import { House , Search, X  } from "lucide-react";
+import { House , Search, X , Eye, CircleCheck, CircleX } from "lucide-react";
 import Layout from "../../../components/Layout"
 import Head from "next/head";
 import { useState } from "react";
@@ -150,10 +150,30 @@ const Table = ()=> {
           <td className="border px-4 py-2">{row.totalAmount}</td>
           <td className="border px-4 py-2">{row.remainingAmount}</td>
           <td className="border px-4 py-2">{row.currencyType}</td>
-          <td className="border px-4 py-2">{row.status}</td>
+          <td className="border px-4 py-2">
+          {row.status === true ? (
+            <div className="text-gray-600 flex items-center justify-center rounded-full bg-[rgb(148,239,105)] py-1 px-4 shadow-md">
+              Paid
+            </div>
+          ) : (
+            <div className="text-gray-600 flex items-center justify-center rounded-full bg-[rgb(232,239,105)] py-1 px-4 shadow-md">
+              Pending
+            </div>
+          )}
+          </td>
           <td className="border px-4 py-2">{row.description}</td>
           <td className="border px-4 py-2">
-            <button className="text-blue-500 hover:underline">Action</button>
+            {row.status === true ? (
+              <div className=" flex items-center justify-center rounded-full">
+                <button className=""><Eye/></button>
+              </div>
+            ) : (
+              <div className=" flex items-center justify-center rounded-full gap-3">
+                <button><CircleCheck className="text-[#33cc45]"/></button>
+                <button><CircleX className="text-[#de0d0d]"/></button>
+              </div>
+              
+            )}
           </td>
         </tr>
       ))}
