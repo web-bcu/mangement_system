@@ -1,4 +1,4 @@
-import { House , Search, X  } from "lucide-react";
+import { House , Search, X , Eye, CircleCheck, CircleX } from "lucide-react";
 import Layout from "../../../components/Layout"
 import Head from "next/head";
 import { useState } from "react";
@@ -45,7 +45,7 @@ const SearchBar = () => {
           <label htmlFor="search" className="block text-sm font-medium text-gray-700">Search</label>
           <input
             type="text"
-            placeholder="Search by PO Ref, Description"
+            placeholder="Search by BA Ref, Description"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500 w-full"
@@ -93,9 +93,9 @@ const SearchBar = () => {
             onChange={(e) => setSelectedStatus(e.target.value)}
             className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500 w-full"
           >
-            <option>Chooose</option>
-            <option>Active</option>
-            <option>Inactive</option>
+            <option>Choose</option>
+            <option>Pending</option>
+            <option>Paid</option>
           </select>
         </div>
       </div>
@@ -111,7 +111,7 @@ const SearchBar = () => {
           <span className="font-semibold">Add</span>
         </button>
         <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition">
-          <span className="font-semibold">Close multiple POs</span>
+          <span className="font-semibold">Close multiple BAs</span>
         </button>
       </div>
     </div>
@@ -126,7 +126,7 @@ const Table = ()=> {
   <table className="table-auto w-full text-sm text-left border-collapse border border-gray-300">
     <thead className="bg-gray-100">
       <tr>
-        <th className="border px-4 py-2">PO Number</th>
+        <th className="border px-4 py-2">BA Number</th>
         <th className="border px-4 py-2">Creation Date</th>
         <th className="border px-4 py-2">Created By</th>
         <th className="border px-4 py-2">Approved By</th>
@@ -150,10 +150,30 @@ const Table = ()=> {
           <td className="border px-4 py-2">{row.totalAmount}</td>
           <td className="border px-4 py-2">{row.remainingAmount}</td>
           <td className="border px-4 py-2">{row.currencyType}</td>
-          <td className="border px-4 py-2">{row.status}</td>
+          <td className="border px-4 py-2">
+          {row.status === true ? (
+            <div className="text-gray-600 flex items-center justify-center rounded-full bg-[rgb(148,239,105)] py-1 px-4 shadow-md">
+              Paid
+            </div>
+          ) : (
+            <div className="text-gray-600 flex items-center justify-center rounded-full bg-[rgb(232,239,105)] py-1 px-4 shadow-md">
+              Pending
+            </div>
+          )}
+          </td>
           <td className="border px-4 py-2">{row.description}</td>
           <td className="border px-4 py-2">
-            <button className="text-blue-500 hover:underline">Action</button>
+            {row.status === true ? (
+              <div className=" flex items-center justify-center rounded-full">
+                <button className=""><Eye/></button>
+              </div>
+            ) : (
+              <div className=" flex items-center justify-center rounded-full gap-3">
+                <button><CircleCheck className="text-[#33cc45]"/></button>
+                <button><CircleX className="text-[#de0d0d]"/></button>
+              </div>
+              
+            )}
           </td>
         </tr>
       ))}

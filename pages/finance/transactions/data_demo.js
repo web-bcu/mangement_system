@@ -8,7 +8,7 @@ export const data = [
       "totalAmount": "5000 USD",
       "remainingAmount": "1200 USD",
       "currencyType": "USD",
-      "status": "Approved",
+      "status": true,
       "description": "Purchase of office supplies",
       "actions": "Edit"
     },
@@ -21,7 +21,7 @@ export const data = [
       "totalAmount": "12000 EUR",
       "remainingAmount": "4500 EUR",
       "currencyType": "EUR",
-      "status": "Pending",
+      "status": false,
       "description": "Employee training program",
       "actions": "Edit"
     },
@@ -34,7 +34,7 @@ export const data = [
       "totalAmount": "8000 GBP",
       "remainingAmount": "3000 GBP",
       "currencyType": "GBP",
-      "status": "Approved",
+      "status": true,
       "description": "Software licenses renewal",
       "actions": "Edit"
     },
@@ -47,7 +47,7 @@ export const data = [
       "totalAmount": "15000 USD",
       "remainingAmount": "5000 USD",
       "currencyType": "USD",
-      "status": "Approved",
+      "status": true,
       "description": "Digital marketing campaign",
       "actions": "Edit"
     },
@@ -60,7 +60,7 @@ export const data = [
       "totalAmount": "20000 AUD",
       "remainingAmount": "8000 AUD",
       "currencyType": "AUD",
-      "status": "Pending",
+      "status": false,
       "description": "New equipment procurement",
       "actions": "Edit"
     }
