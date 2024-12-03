@@ -1,8 +1,8 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { useRouter } from 'next/router';
-import {EmployeeManagement, FinanceManagement } from "../data/NavBarData";
+import {EmployeeManagement, FinanceManagement, ManagerManagement } from "../data/NavBarData";
 
 import {
   MdOutlineSpaceDashboard,
@@ -10,11 +10,24 @@ import {
   MdOutlineLogout,
 } from "react-icons/md/index";
 import Link from "next/link";
+import { useUserContext } from "../context/UserContext";
 
 function SideNavbar() {
   const [isFinanceSubMenuOpen, setFinanceSubMenuOpen] = useState(false);
   const [isEmployeeSubMenuOpen, setEmployeeSubMenuOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [navEmployee, setNavEmployee] = useState([]);
+  const {user} = useUserContext();
+  console.log(user)
+
+  useEffect(() => {
+    if (user.role === "user") {
+      setNavEmployee(EmployeeManagement);
+    }
+    else if (user.role === "manager") {
+      setNavEmployee(ManagerManagement);
+    }
+  }, [user])
 
   const handleSubMenuToggle = (setSubMenuOpen) => {
     setSubMenuOpen((prevState) => !prevState);
@@ -150,7 +163,7 @@ function SideNavbar() {
                 </div>
                   {isEmployeeSubMenuOpen && (
                   <div className="">
-                    <SubMenu item={EmployeeManagement} />
+                    <SubMenu item={navEmployee} />
                   </div>
                     )}
               </div>
