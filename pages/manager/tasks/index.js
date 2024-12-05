@@ -1,11 +1,25 @@
-import { useEffect } from "react"
+import { useEffect , useState} from "react"
 import { useUserContext } from "../../../context/UserContext"
 import Layout from "../../../components/Layout";
 import { Eye, CircleX  } from "lucide-react";
+import {Button, Modal, Form, Input, DatePicker, Select} from 'antd'
 import { data } from "./data_demo";
+import "../../../styles/Home.module.css"
 export default function EmployeeTasksManagement() {
     // const {user} = useUserContext();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const showModal = () => {
+      setIsModalOpen(true);
+    };
+  
+    const handleOk = () => {
+      setIsModalOpen(false);
+    };
+  
+    const handleCancel = () => {
+      setIsModalOpen(false);
+    };
     // if (user.role !== "manager") {
     //     return (
     //         <Layout>
@@ -16,19 +30,93 @@ export default function EmployeeTasksManagement() {
     return (
         <Layout>
             <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
-                <div className="flex justify-center items-center text-3xl">Manage your employee task here</div>
-                <Table/>
+              <div className="flex justify-center items-center text-3xl">Manage your employee task here</div>
+              <Table showModal={showModal}/>
+              <CreateModal
+                isModalOpen={isModalOpen}
+                handleOk={handleOk}
+                handleCancel={handleCancel}
+              />
             </div>
         </Layout>
     )
     
 }
 
-const Table = ()=> {
+const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
+  const [form] = Form.useForm();
+  const employeeOptions = [
+    { label: "John Doe", value: "john_doe" },
+    { label: "Jane Smith", value: "jane_smith" },
+    { label: "Sam Wilson", value: "sam_wilson" },
+  ];
+  const modal_footer=[
+    <Button size="large" key="cancel" onClick={handleCancel}
+      className="bg-[rgb(239,105,105)] text-white no-transition">
+      Cancel
+    </Button>,
+    <Button size="large"
+      className="bg-[rgb(115,222,65)] text-white no-transition"
+      key="submit"
+      onClick={() => {
+        form.validateFields()
+          .then(values => {
+            handleOk(values);
+            form.resetFields();
+          })
+          .catch(info => {
+            console.log('Validate Failed:', info);
+          });
+      }}
+    >
+      Create
+    </Button>,
+  ]
+
+  return (
+    <Modal
+      title="Create New Task"
+      open={isModalOpen}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      footer={modal_footer}
+      width={850} 
+    >
+      <Form form={form} layout="vertical">
+        <Form.Item name="taskName" label="Task Name" rules={[{ required: true, message: 'Please input the task name!' }]}>
+          <Input size="large"/>
+        </Form.Item>
+        <Form.Item
+          name="Employee"
+          label="Employee"
+          rules={[{ required: true, message: 'Please select the assignee!' }]}
+        >
+          <Select placeholder="Select an employee" size="large">
+            {employeeOptions.map((employee) => (
+              <Select.Option key={employee.value} value={employee.value}>
+                {employee.label}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item name="deadline" label="Deadline" rules={[{ required: true, message: 'Please select the deadline!' }]}>
+          <DatePicker style={{ width: '100%' }} size="large"></DatePicker>
+        </Form.Item>
+      </Form>
+    </Modal>
+  )
+}
+const Table = ({showModal})=> {
   
 
     return (
   <div className="overflow-x-auto mt-8">
+    <Button 
+    size="large"
+    className="mb-2"
+    onClick={showModal}>
+      Create Task
+    </Button>
     <table className="table-auto w-full text-sm text-left border-collapse border border-gray-300">
       <thead className="bg-gray-100">
         <tr>
