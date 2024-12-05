@@ -12,7 +12,7 @@ export default function Transaction() {
         <link rel="icon" href="/pro.ico" />
       </Head>
       <Layout>
-        <div className="p-6 w-full bg-white shadow-md rounded-md">
+        <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
           <div className="flex items-center text-gray-600 space-x-2 mb-4">
             <span className="text-gray-500 group" onClick={()=> backToHome()}>
               <House className="text-gray-500 group-hover:text-black transition-colors duration-300" size={20}/>

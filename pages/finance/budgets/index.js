@@ -17,7 +17,7 @@ export default function Budget() {
         <link rel="icon" href="/pro.ico" />
       </Head>
       <Layout>
-        <div className="p-6 w-full bg-white shadow-md rounded-md">
+        <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
           <div className="flex items-center text-gray-600 space-x-2 mb-4">
             <span className="text-gray-500 group" onClick={()=> backToHome()}>
               <House className="text-gray-500 group-hover:text-black transition-colors duration-300" size={20}/>
@@ -37,7 +37,7 @@ export default function Budget() {
 }
 const SearchBar = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 ">
       <input
         type="text"
         placeholder="Search by Budget Code/Description"
