@@ -8,10 +8,10 @@ export function useUserContext() {
 
 export default function UserContextProvider({children}) {
     const [user, setUser] = useState({
-        id: "23560092",
+        id: "2",
         full_name: "Viet An Nguyen",
         department_id: "dp_01",
-        role: "user"
+        role: "manager"
     })
 
     return (

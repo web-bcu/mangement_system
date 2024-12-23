@@ -5,10 +5,45 @@ import Head from "next/head";
 export default function Transaction() {
     const [employeeCode, setEmployeeCode] = useState('');
     const [password, setPassword] = useState('');
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
-        console.log(employeeCode);
-        console.log(password);
+        try {
+            const response = await fetch('http://localhost:8090/api/v1/auth/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                employeeCode,
+                password,
+              }),
+            });
+      
+            const data = await response.json();
+            if (response.ok) {
+              const token = data.token;
+              localStorage.setItem('token', token); 
+      
+              const userResponse = await fetch('http://localhost:8090/api/v1/users', {
+                method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                },
+              });
+      
+              const userData = await userResponse.json();
+              if (userResponse.ok) {
+                setUser(userData);
+              } else {
+                setError('Failed to fetch user data');
+              }
+            } else {
+              setError(data.message || 'Authentication failed');
+            }
+          } catch (err) {
+            setError('Something went wrong');
+          }
+        
       };
     return (
         <div className="">

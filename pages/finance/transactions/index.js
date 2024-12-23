@@ -1,9 +1,55 @@
 import { House , Search, X , Eye, CircleCheck, CircleX } from "lucide-react";
 import Layout from "../../../components/Layout"
 import Head from "next/head";
-import { useState } from "react";
-import { data } from "./data_demo";
+import { useEffect, useState } from "react";
+import { postFetcher,getFetcher , deleteFetcher, updateFetcher} from "../../../fetcher";
+import useSWR, { mutate } from 'swr';
+import {Button, Modal, Form, Input, Upload, Select, Pagination, InputNumber, message} from 'antd'
+import { UploadOutlined } from '@ant-design/icons';
 export default function Transaction() {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useState("");
+  const showModal = () => {
+    setIsCreateModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsCreateModalOpen(false);
+  }; 
+  const handleCancel = () => {
+    setIsCreateModalOpen(false);
+  };
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const onSearch = ({ searchQuery, startDate, endDate, selectedBudget, selectedStatus }) => {
+    const searchParams = new URLSearchParams();
+    if (searchQuery) searchParams.append('searchQuery', searchQuery);
+    if (startDate) searchParams.append('startDate', startDate);
+    if (endDate) searchParams.append('endDate', endDate);
+    if (selectedBudget) searchParams.append('budget', selectedBudget);
+    if (selectedStatus) searchParams.append('status', selectedStatus);
+    setCurrentPage(1);  
+    setSearchParams(searchParams.toString())
+  };
+  
+
+
+  const { data, error, isLoading } = useSWR(
+    `/api/transaction?page=${currentPage}&${searchParams}`,
+    getFetcher,
+    {
+      refreshInterval: 0,
+      revalidateOnFocus: true,
+    }
+  );
+
+  
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
   return (
     <div className="">
       <Head>
@@ -12,7 +58,7 @@ export default function Transaction() {
         <link rel="icon" href="/pro.ico" />
       </Head>
       <Layout>
-        <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
+        <div className="p-6 w-full bg-white shadow-md rounded-md min-h-screen">
           <div className="flex items-center text-gray-600 space-x-2 mb-4">
             <span className="text-gray-500 group" onClick={()=> backToHome()}>
               <House className="text-gray-500 group-hover:text-black transition-colors duration-300" size={20}/>
@@ -22,22 +68,148 @@ export default function Transaction() {
           </div>
           <hr></hr>
           <h1 className="text-2xl font-semibold mb-4 mt-4">Transaction Management</h1>
-          <SearchBar />
-          <Table />
-
+          <SearchBar showModal={showModal} onSearch={onSearch} setSearchParams={setSearchParams} setCurrentPage={setCurrentPage}/>
+          <Table currentPage={data.currentPage} totalPages={data.totalPages} data={data.data} handlePageChange={handlePageChange} />
+          <CreateModal
+                isCreateModalOpen={isCreateModalOpen}
+                handleOk={handleOk}
+                handleCancel={handleCancel}
+              />
         </div>
       </Layout>
     </div>
   );
 }
+const CreateModal = ({ isCreateModalOpen, handleOk, handleCancel}) => {
+  const [form] = Form.useForm();
+  const [budgetOptions, setBudgetOptions] = useState([]);
+  const modal_footer=[
+    <Button size="large" key="cancel" onClick={handleCancel}
+      className="bg-[rgb(239,105,105)] text-white no-transition">
+      Cancel
+    </Button>,
+    <Button size="large"
+      className="bg-[rgb(115,222,65)] text-white no-transition"
+      key="submit"
+      onClick={() => handleCreate()}
+    >
+      Create
+    </Button>,
+  ]
 
-const SearchBar = () => {
+  const { data, error, isLoading } = useSWR(['/api/budget/id-currency'], getFetcher);
+  useEffect(() => {
+    if (isCreateModalOpen) {
+      setBudgetOptions(data); 
+    }
+  }, [isCreateModalOpen]);
+  const [err, setErr] = useState('')
+  const handleCreate = async () => {
+    try {
+      const values = await form.validateFields();
+      
+      const newData = await postFetcher('/api/transaction', {
+        id: values.transactionId,
+        transactionType: values.transactionType,
+        budgetId: values.Budget,
+        currency: budgetOptions.find(budget => budget.id === values.Budget).currency, 
+        amount: values.transactionAmount,
+        description: values.Description
+      });
+      
+      window.location.reload();
+
+      
+      handleOk(values); 
+      form.resetFields();
+    } catch (error) {
+      setErr(error)
+      console.error('Failed to create Budget:', error);
+    }
+  };
+  
+  return (
+    <Modal
+      title="Create New Task"
+      open={isCreateModalOpen}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      footer={modal_footer}
+      width={850} 
+    >
+      <Form form={form} layout="vertical">
+        <Form.Item name="transactionId" label="Transaction Id" rules={[{ required: true, message: 'Please input the transaction type!' }]}>
+          <Input size="large"/>
+        </Form.Item>
+        <Form.Item name="transactionType" label="Transaction Type" rules={[{ required: true, message: 'Please input the transaction type!' }]}>
+          <Input size="large"/>
+        </Form.Item>
+        <Form.Item
+          name="Budget"
+          label="Choose Budget"
+          rules={[{ required: true, message: 'Please select the Budget!' }]}
+        >
+          <Select placeholder="Select a Budget" size="large">
+            {budgetOptions.map((budget) => (
+              <Select.Option key={budget.id} value={budget.id}>
+                {budget.id}({budget.currency})
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item
+          name="transactionAmount"
+          label="Transaction Amount"
+          rules={[{ required: true, message: 'Please input the initial budget amount!' }]}
+        >
+        <InputNumber
+          min={0}
+          step={1000}
+          placeholder="Enter transaction amount"
+          style={{ width: '100%' }}
+          size="large"
+        />
+        </Form.Item>
+        <Form.Item name="Description" label="Description"
+          rules={[{ required: true, message: 'Please input the Description!' }]}
+        >
+            <Input.TextArea size="large"/>
+        </Form.Item>
+      </Form>
+      <div>
+        {err && err.errorFields && err.errorFields[0] && err.errorFields[0].errors && err.errorFields[0].errors[0] && (
+          <div style={{ color: 'red' }}>
+            {err.errorFields[0].errors[0]}
+          </div>
+        )}
+      </div>
+    </Modal>
+  )
+}
+const SearchBar = ({showModal, onSearch, setSearchParams, setCurrentPage}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedBudget, setSelectedBudget] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
-
+  const handleReset = () => {
+    setSearchQuery('');
+    setStartDate('');
+    setEndDate('');
+    setSelectedBudget('');
+    setSelectedStatus('');
+    setSearchParams('');  
+    setCurrentPage(1); 
+  };
+  const handleSearch = () => {
+    onSearch({
+      searchQuery,
+      startDate,
+      endDate,
+      selectedBudget,
+      selectedStatus,
+    });
+  };
   return (
     <div>
       <div className="flex flex-wrap sm:flex-nowrap sm:space-x-4 mb-4 p-4">
@@ -101,55 +273,74 @@ const SearchBar = () => {
       </div>
 
       <div className="flex flex-col sm:flex-row sm:space-x-2 ml-4">
-        <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition mb-2 sm:mb-0">
+        <button  onClick={handleSearch}  className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition mb-2 sm:mb-0">
           <span className="font-semibold">Search</span>
         </button>
-        <button className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500 transition mb-2 sm:mb-0">
+        <button onClick={handleReset} className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500 transition mb-2 sm:mb-0">
           <span className="font-semibold">Reset</span>
         </button>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition mb-2 sm:mb-0">
+        <button onClick={showModal} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition mb-2 sm:mb-0">
           <span className="font-semibold">Add</span>
         </button>
-        <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition">
+        {/* <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition">
           <span className="font-semibold">Close multiple BAs</span>
-        </button>
+        </button> */}
       </div>
     </div>
   );
 };
 
-const Table = ()=> {
-  
+const Table = ( {currentPage, totalPages, data, handlePageChange})=> {
+  const [isFileModalOpen, setIsFileModalOpen] = useState(false)
+  const handleDelete = async (id) => {
+    try {
+      const url = `/api/transaction/${id}`; 
+      
+      await deleteFetcher(url);
+      window.location.reload();
 
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
+      alert("Failed to delete transaction.");
+    }
+  };
+  const showFileModal = () => {
+    setIsFileModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsFileModalOpen(false);
+  }; 
+  const handleCancel = () => {
+    setIsFileModalOpen(false);
+  };
   return (
+    
 <div className="overflow-x-auto mt-8">
-  <table className="table-auto w-full text-sm text-left border-collapse border border-gray-300">
+  <FileModal isFileModalOpen={isFileModalOpen} handleOk={handleOk} handleCancel={handleCancel}/>
+  <table className="table-auto w-full  text-sm text-left border-collapse border border-gray-300">
     <thead className="bg-gray-100">
-      <tr>
-        <th className="border px-4 py-2">BA Number</th>
-        <th className="border px-4 py-2">Creation Date</th>
-        <th className="border px-4 py-2">Created By</th>
-        <th className="border px-4 py-2">Approved By</th>
-        <th className="border px-4 py-2">Control Department</th>
-        <th className="border px-4 py-2">Total Amount</th>
-        <th className="border px-4 py-2">Remaining Amount</th>
-        <th className="border px-4 py-2">Currency Type</th>
-        <th className="border px-4 py-2">Status</th>
+    <tr>
+        <th className="border px-4 py-2">Transaction Id</th>
+        <th className="border px-4 py-2">Transaction Type</th>
+        <th className="border px-4 py-2">Amount</th> 
+        <th className="border px-4 py-2">Currency</th>
+        <th className="border px-4 py-2">Transaction Date</th> 
         <th className="border px-4 py-2">Description</th>
+        <th className="border px-4 py-2">Budget Id</th>
+        <th className="border px-4 py-2">Status</th> 
         <th className="border px-4 py-2">Actions</th>
       </tr>
     </thead>
     <tbody>
       {data.map((row, index) => (
         <tr key={index} className="hover:bg-gray-100">
-          <td className="border px-4 py-2">{row.poNumber}</td>
-          <td className="border px-4 py-2">{row.creationDate}</td>
-          <td className="border px-4 py-2">{row.createdBy}</td>
-          <td className="border px-4 py-2">{row.approvedBy}</td>
-          <td className="border px-4 py-2">{row.controlDepartment}</td>
-          <td className="border px-4 py-2">{row.totalAmount}</td>
-          <td className="border px-4 py-2">{row.remainingAmount}</td>
-          <td className="border px-4 py-2">{row.currencyType}</td>
+          <td className="border px-4 py-2">{row.id}</td>
+          <td className="border px-4 py-2">{row.transactionType}</td>
+          <td className="border px-4 py-2">{row.amount}</td>
+          <td className="border px-4 py-2">{row.currency}</td>
+          <td className="border px-4 py-2">{row.transactionDate}</td>
+          <td className="border px-4 py-2">{row.description}</td>
+          <td className="border px-4 py-2">{row.budget_id}</td>
           <td className="border px-4 py-2">
           {row.status === true ? (
             <div className="text-gray-600 flex items-center justify-center rounded-full bg-[rgb(148,239,105)] py-1 px-4 shadow-md">
@@ -161,7 +352,6 @@ const Table = ()=> {
             </div>
           )}
           </td>
-          <td className="border px-4 py-2">{row.description}</td>
           <td className="border px-4 py-2">
             {row.status === true ? (
               <div className=" flex items-center justify-center rounded-full">
@@ -169,8 +359,8 @@ const Table = ()=> {
               </div>
             ) : (
               <div className=" flex items-center justify-center rounded-full gap-3">
-                <button><CircleCheck className="text-[#33cc45]"/></button>
-                <button><CircleX className="text-[#de0d0d]"/></button>
+                <button onClick={(showFileModal)}><CircleCheck className="text-[#33cc45]"/></button>
+                <button onClick={() => handleDelete(row.id)}><CircleX className="text-[#de0d0d]"/></button>
               </div>
               
             )}
@@ -179,17 +369,94 @@ const Table = ()=> {
       ))}
     </tbody>
   </table>
-  <div className="flex justify-between items-center mt-4">
-    <span className="text-sm text-gray-600">1-10 of 76 Items</span>
-    <div className="flex space-x-1">
-      <button className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">1</button>
-      <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">2</button>
-      <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">3</button>
-      <span>...</span>
-      <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">10</button>
-    </div>
+  <div className="flex justify-end items-center mt-4">
+  <Pagination
+        current={currentPage}
+        total={totalPages * 10} 
+        onChange={handlePageChange}
+        showSizeChanger={false} 
+        pageSize={10}
+        className="my-pagination" 
+      />
   </div>
 </div>
 
   );
 }
+const FileModal = ({ isFileModalOpen, handleOk, handleCancel }) => {
+  const [form] = Form.useForm();
+  const [err, setErr] = useState('');
+
+  const modal_footer = [
+    <Button
+      size="large"
+      key="cancel"
+      onClick={handleCancel}
+      className="bg-[rgb(239,105,105)] text-white no-transition"
+    >
+      Cancel
+    </Button>,
+    <Button
+      size="large"
+      className="bg-[rgb(115,222,65)] text-white no-transition"
+      key="submit"
+      onClick={() => handleCreate()}
+    >
+      Upload
+    </Button>,
+  ];
+
+  const handleCreate = () => {
+    form.validateFields()
+      .then((values) => {
+        console.log('Form Values:', values);
+        message.success('File uploaded successfully');
+        handleOk();
+      })
+      .catch((error) => {
+        setErr(error);
+        message.error('Please fill in all required fields.');
+      });
+  };
+
+  return (
+    <Modal
+      title="Upload a File"
+      open={isFileModalOpen}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      footer={modal_footer}
+      
+    >
+      <Form form={form} layout="vertical">
+        <Form.Item
+          label="File"
+          name="file"
+          valuePropName="file"
+          rules={[
+            {
+              required: true,
+              message: 'Please upload a file!',
+            },
+          ]}
+        >
+          <Upload
+            beforeUpload={() => false}
+            accept=".csv,.pdf,.docx,.jpg,.jpeg,.png,.gif" 
+          >
+
+            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+          </Upload>
+        </Form.Item>
+      </Form>
+      <div>
+        {err && err.errorFields && err.errorFields[0] && err.errorFields[0].errors && err.errorFields[0].errors[0] && (
+          <div style={{ color: 'red' }}>
+            {err.errorFields[0].errors[0]}
+          </div>
+        )}
+      </div>
+    </Modal>
+  );
+};
+

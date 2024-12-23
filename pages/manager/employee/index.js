@@ -4,7 +4,7 @@ import { data } from "./data_demo";
 export default function EmployeeScreen() {
     const {user} = useUserContext();
 
-    if (user.role !== "user") {
+    if (user.role == "user") {
         return (
             <Layout>
                 <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
