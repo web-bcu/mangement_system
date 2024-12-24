@@ -6,6 +6,7 @@ import { postFetcher,getFetcher , deleteFetcher, updateFetcher} from "../../../f
 import useSWR, { mutate } from 'swr';
 import {Button, Modal, Form, Input, Upload, Select, Pagination, InputNumber, message} from 'antd'
 import { UploadOutlined } from '@ant-design/icons';
+import { FINANCE_API_URL } from "../../../env";
 export default function Transaction() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,7 +70,7 @@ export default function Transaction() {
           <hr></hr>
           <h1 className="text-2xl font-semibold mb-4 mt-4">Transaction Management</h1>
           <SearchBar showModal={showModal} onSearch={onSearch} setSearchParams={setSearchParams} setCurrentPage={setCurrentPage}/>
-          <Table currentPage={data.currentPage} totalPages={data.totalPages} data={data.data} handlePageChange={handlePageChange} />
+          <Table currentPage={data.currentPage} totalPages={data.totalPages} data={data.data} handlePageChange={handlePageChange} searchParams={searchParams} />
           <CreateModal
                 isCreateModalOpen={isCreateModalOpen}
                 handleOk={handleOk}
@@ -290,8 +291,9 @@ const SearchBar = ({showModal, onSearch, setSearchParams, setCurrentPage}) => {
   );
 };
 
-const Table = ( {currentPage, totalPages, data, handlePageChange})=> {
+const Table = ( {currentPage, totalPages, data, handlePageChange, searchParams})=> {
   const [isFileModalOpen, setIsFileModalOpen] = useState(false)
+  const [selectedId, setSelectedId] = useState(null); 
   const handleDelete = async (id) => {
     try {
       const url = `/api/transaction/${id}`; 
@@ -304,7 +306,11 @@ const Table = ( {currentPage, totalPages, data, handlePageChange})=> {
       alert("Failed to delete transaction.");
     }
   };
-  const showFileModal = () => {
+  const showImg =  (url) => {
+    window.open(url, '_blank');
+  };
+  const showFileModal = (id) => {
+    setSelectedId(id);
     setIsFileModalOpen(true);
   };
   const handleOk = () => {
@@ -316,7 +322,7 @@ const Table = ( {currentPage, totalPages, data, handlePageChange})=> {
   return (
     
 <div className="overflow-x-auto mt-8">
-  <FileModal isFileModalOpen={isFileModalOpen} handleOk={handleOk} handleCancel={handleCancel}/>
+  <FileModal isFileModalOpen={isFileModalOpen} handleOk={handleOk} handleCancel={handleCancel} id={selectedId} searchParams={searchParams} currentPage={currentPage}/>
   <table className="table-auto w-full  text-sm text-left border-collapse border border-gray-300">
     <thead className="bg-gray-100">
     <tr>
@@ -355,11 +361,11 @@ const Table = ( {currentPage, totalPages, data, handlePageChange})=> {
           <td className="border px-4 py-2">
             {row.status === true ? (
               <div className=" flex items-center justify-center rounded-full">
-                <button className=""><Eye/></button>
+                <button onClick={()=>showImg(row.image)} className=""><Eye/></button>
               </div>
             ) : (
               <div className=" flex items-center justify-center rounded-full gap-3">
-                <button onClick={(showFileModal)}><CircleCheck className="text-[#33cc45]"/></button>
+                <button onClick={()=>showFileModal(row.id)}><CircleCheck className="text-[#33cc45]"/></button>
                 <button onClick={() => handleDelete(row.id)}><CircleX className="text-[#de0d0d]"/></button>
               </div>
               
@@ -383,7 +389,7 @@ const Table = ( {currentPage, totalPages, data, handlePageChange})=> {
 
   );
 }
-const FileModal = ({ isFileModalOpen, handleOk, handleCancel }) => {
+const FileModal = ({ isFileModalOpen, handleOk, handleCancel , id, currentPage,searchParams}) => {
   const [form] = Form.useForm();
   const [err, setErr] = useState('');
 
@@ -409,9 +415,30 @@ const FileModal = ({ isFileModalOpen, handleOk, handleCancel }) => {
   const handleCreate = () => {
     form.validateFields()
       .then((values) => {
-        console.log('Form Values:', values);
-        message.success('File uploaded successfully');
-        handleOk();
+        const file = values.file?.file; 
+        if (file) {
+          const formData = new FormData();
+          formData.append('file', file);
+          fetch(`${FINANCE_API_URL}/transactions/${id}/status`, {
+            method: 'PUT',
+            body: formData,
+          })
+            .then((response) => {
+              if (response.ok) {
+                message.success('File uploaded successfully');
+                handleOk();
+                form.resetFields(); 
+                mutate(`/api/transaction?page=${currentPage}&${searchParams}`);
+              } else {
+                message.error('Failed to upload file');
+              }
+            })
+            .catch((error) => {
+              message.error(`Error: ${error.message}`);
+            });
+        } else {
+          message.error('No file selected!');
+        }
       })
       .catch((error) => {
         setErr(error);
@@ -441,8 +468,9 @@ const FileModal = ({ isFileModalOpen, handleOk, handleCancel }) => {
           ]}
         >
           <Upload
-            beforeUpload={() => false}
-            accept=".csv,.pdf,.docx,.jpg,.jpeg,.png,.gif" 
+            beforeUpload={() => false} 
+            accept=".csv,.pdf,.docx,.jpg,.jpeg,.png,.gif"
+            maxCount={1}
           >
 
             <Button icon={<UploadOutlined />}>Click to Upload</Button>
