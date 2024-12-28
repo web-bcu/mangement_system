@@ -100,7 +100,7 @@ export default function Transaction() {
                     </form>
                     <p className="mt-4 text-sm text-center text-gray-600">
                     Haven't had account yet?{' '}
-                    <a href="#" className="text-indigo-500 hover:underline">
+                    <a href="/register" className="text-indigo-500 hover:underline">
                         Sign In
                     </a>
                     </p>
