@@ -65,7 +65,57 @@ export const ManagerManagement = [
         )
     },
     {
-        href: "/manager/employee",
+        href: "/manager/employees",
+        label: "Employees",
+        icon: (
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                width="24"
+                height="24"
+            >
+                <path d="M21 2H3v20h18V2zM3 4h18v2H3V4zm0 4h18v2H3V8zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z" />
+            </svg>
+        )
+    },
+]
+
+export const AdminManagement = [
+    {
+        href: "/admin/departments",
+        label: "Departments",
+        icon: (
+                <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                width="24"
+                height="24"
+                >
+                <path d="M21 3H3c-1.1 0-1.99.89-1.99 2L1 19c0 1.1.89 2 1.99 2h18c1.1 0 1.99-.89 1.99-2L23 5c0-1.11-.89-2-2-2zM12 8c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 8c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z" />
+                </svg>
+
+        )
+    },
+    {
+        href: "/admin/projects",
+        label: "Projects",
+        icon: (
+                <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                width="24"
+                height="24"
+                >
+                <path d="M21 3H3c-1.1 0-1.99.89-1.99 2L1 19c0 1.1.89 2 1.99 2h18c1.1 0 1.99-.89 1.99-2L23 5c0-1.11-.89-2-2-2zM12 8c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 8c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z" />
+                </svg>
+
+        )
+    },
+    {
+        href: "/admin/employees",
         label: "Employees",
         icon: (
             <svg

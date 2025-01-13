@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { useRouter } from 'next/router';
-import {EmployeeManagement, FinanceManagement, ManagerManagement } from "../data/NavBarData";
+import {EmployeeManagement, FinanceManagement, ManagerManagement, AdminManagement } from "../data/NavBarData";
 
 import {
   MdOutlineSpaceDashboard,
@@ -17,7 +17,7 @@ function SideNavbar() {
   const [isEmployeeSubMenuOpen, setEmployeeSubMenuOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [navEmployee, setNavEmployee] = useState([]);
-  const { user } = useUserContext();
+  const { user, setUser } = useUserContext();
   const router = useRouter();
   console.log(user)
 
@@ -28,6 +28,9 @@ function SideNavbar() {
     else if (user && user.role === "MANAGER") {
       setNavEmployee(ManagerManagement);
     }
+    else if (user && user.role === "ADMIN") {
+      setNavEmployee(AdminManagement);
+    }
   }, [user])
 
   const handleSubMenuToggle = (setSubMenuOpen) => {
@@ -37,6 +40,7 @@ function SideNavbar() {
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
   const logout = () => {
     localStorage.removeItem("token");
+    setUser(null);
     router.push("/login");
   }
 

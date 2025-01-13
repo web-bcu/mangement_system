@@ -8,6 +8,7 @@ import "../../../styles/Home.module.css"
 export default function EmployeeTasksManagement() {
     // const {user} = useUserContext();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const {user} = useUserContext();
 
     const showModal = () => {
       setIsModalOpen(true);
@@ -27,6 +28,14 @@ export default function EmployeeTasksManagement() {
     //         </Layout>
     //     )
     // }
+    if (user && user.role !== "MANAGER") {
+      return (
+        <Layout>
+          <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
+        </Layout>
+      )
+    }
+
     return (
         <Layout>
             <div className="p-6 w-full bg-white shadow-md rounded-md h-full">

@@ -4,7 +4,7 @@ import { data } from "./data_demo";
 export default function EmployeeScreen() {
     const {user} = useUserContext();
 
-    if (user && user.role == "user") {
+    if (user && user.role !== "MANAGER") {
         return (
             <Layout>
                 <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
@@ -30,8 +30,8 @@ const Table = ()=> {
         <tr>
           <th className="border px-4 py-2">Employee ID</th>
           <th className="border px-4 py-2">Employee Name</th>
-          <th className="border px-4 py-2">Date of Birth</th>
-          <th className="border px-4 py-2">Years of Experience</th>
+          <th className="border px-4 py-2">Department</th>
+          <th className="border px-4 py-2">Role</th>
         </tr>
       </thead>
       <tbody>
