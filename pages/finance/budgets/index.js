@@ -240,7 +240,7 @@ const Table = ( {currentPage, totalPages, data, handlePageChange})=> {
           </tr>
         </thead>
         <tbody>
-          {data.map((row, index) => (
+          {data && data.map((row, index) => (
             <tr key={index} className="hover:bg-gray-100">
               <td className="border px-4 py-2">{row.id}</td>
               <td className="border px-4 py-2">{row.description}</td>

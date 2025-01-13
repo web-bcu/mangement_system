@@ -4,7 +4,7 @@ import { data } from "./data_demo";
 export default function EmployeeScreen() {
     const {user} = useUserContext();
 
-    if (user.role == "user") {
+    if (user && user.role == "user") {
         return (
             <Layout>
                 <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
@@ -45,7 +45,7 @@ const Table = ()=> {
         ))}
       </tbody>
     </table>
-    <div className="flex justify-between items-center mt-4">
+    {/* <div className="flex justify-between items-center mt-4">
       <span className="text-sm text-gray-600">1-10 of 76 Items</span>
       <div className="flex space-x-1">
         <button className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">1</button>
@@ -54,7 +54,7 @@ const Table = ()=> {
         <span>...</span>
         <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">10</button>
       </div>
-    </div>
+    </div> */}
   </div>
   
     );

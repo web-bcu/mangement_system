@@ -12,31 +12,31 @@ export default function EmployeeTasks() {
     const {user} = useUserContext();
     const [currentPage, setCurrentPage] = useState(1);
     const [searchParams, setSearchParams] = useState("");
-    const { data, error, isLoading } = useSWR(
-      `${TASK_API_URL}/${user.id}?page=${currentPage}&${searchParams}`,
-      getFetcher,
-      {
-        refreshInterval: 0,
-        revalidateOnFocus: true,
-      }
-    );
-    const handlePageChange = (page) => {
-      setCurrentPage(page);
-    };
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error.message}</div>;
-    if (user.role !== "user") {
-        return (
+    // const { data, error, isLoading } = useSWR(
+    //   `${TASK_API_URL}/${user.id}?page=${currentPage}&${searchParams}`,
+    //   getFetcher,
+    //   {
+    //     refreshInterval: 0,
+    //     revalidateOnFocus: true,
+    //   }
+    // );
+    // const handlePageChange = (page) => {
+    //   setCurrentPage(page);
+    // };
+    // if (isLoading) return <div>Loading...</div>;
+    // if (error) return <div>Error: {error.message}</div>;
+    if (user && user.role !== "USER") {
+      return (
         <Layout>
-            <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
+          <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
         </Layout>
-        )
+      )
     }
     return (
         <Layout>
             <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
                 <div className="flex justify-center items-center text-3xl">Your tasks are here</div>
-                <Table data={data.data} currentPage={data.currentPage} totalPages={data.totalPages} handlePageChange={handlePageChange}/>
+                {/* <Table data={data.data} currentPage={data.currentPage} totalPages={data.totalPages} handlePageChange={handlePageChange}/> */}
             </div>
         </Layout>
     )

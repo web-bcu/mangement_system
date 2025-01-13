@@ -2,48 +2,59 @@ import { useState } from "react";
 import Layout from "../../components/Layout"
 
 import Head from "next/head";
-export default function Transaction() {
+import { useUserContext } from "../../context/UserContext";
+import { toast } from "sonner";
+import { useRouter } from "next/router";
+export default function Login() {
     const [employeeCode, setEmployeeCode] = useState('');
     const [password, setPassword] = useState('');
+    const { user, setUser } = useUserContext();
+    const router = useRouter();
+
     const handleSubmit = async(e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:8090/api/v1/auth/login', {
+            const response = await fetch('http://localhost:8080/api/v1/auth/login', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                employeeCode,
-                password,
+                id: employeeCode,
+                password: password,
               }),
             });
       
             const data = await response.json();
+            // console.log(data.accessToken)
             if (response.ok) {
-              const token = data.token;
+              const token = data.accessToken;
               localStorage.setItem('token', token); 
-      
-              const userResponse = await fetch('http://localhost:8090/api/v1/users', {
-                method: 'GET',
-                headers: {
-                  'Authorization': `Bearer ${token}`,
-                },
-              });
-      
-              const userData = await userResponse.json();
-              if (userResponse.ok) {
-                setUser(userData);
-              } else {
-                setError('Failed to fetch user data');
-              }
-            } else {
-              setError(data.message || 'Authentication failed');
+              router.push("/");
             }
+      
+            //   const userResponse = await fetch(`http://localhost:8080/api/v1/users/${employeeCode}`, {
+            //     method: 'GET',
+            //     headers: {
+            //       'Authorization': `Bearer ${token}`,
+            //     },
+            //   });
+      
+            //   if (userResponse.ok) {
+            //     const userData = await userResponse.json();
+            //     setUser(userData);
+            //     console.log(userData);
+            //     console.log(user);
+            //     // router.push("/");
+            //   } else {
+            //     toast.error("Failed to fetch User");
+            //   }
+            // } else {
+            //   toast.error(data.message || 'Authentication failed');
+            // }
           } catch (err) {
-            setError('Something went wrong');
+            toast.error(`Something went wrong: ${err}`);
           }
-        
       };
     return (
         <div className="">

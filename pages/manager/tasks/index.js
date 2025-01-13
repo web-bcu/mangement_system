@@ -164,7 +164,7 @@ const Table = ({showModal})=> {
         ))}
       </tbody>
     </table>
-    <div className="flex justify-between items-center mt-4">
+    {/* <div className="flex justify-between items-center mt-4">
       <span className="text-sm text-gray-600">1-10 of 76 Items</span>
       <div className="flex space-x-1">
         <button className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">1</button>
@@ -173,7 +173,7 @@ const Table = ({showModal})=> {
         <span>...</span>
         <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">10</button>
       </div>
-    </div>
+    </div> */}
   </div>
   
     );

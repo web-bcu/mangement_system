@@ -1,21 +1,49 @@
+import axios from "axios";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { toast } from "sonner";
+import { useUserContext } from "../../context/UserContext";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    email: "",
     id: "",
+    fullname: "",
+    department: "unknown",
     password: "",
+    role: "user"
   });
+  const [isSigningUp, setIsSigningUp] = useState(false);
+  const router = useRouter()
+  const {user} = useUserContext();
+
+  console.log(user);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission logic here
-    console.log("Form Data Submitted:", formData);
+    try {
+      setIsSigningUp(true);
+      const data = await axios.post("http://localhost:8080/api/v1/auth/register", formData)
+      toast.success("Create Account Successfully!!!");
+      console.log(data);
+    } catch (error){
+      toast.error(`Error occured: ${error}`);
+    } finally {
+      setFormData({
+        id: "",
+        fullname: "",
+        department: "unknown",
+        password: "",
+        role: "user"
+      });
+      setIsSigningUp(false);
+      router.push("/login");
+    }
   };
 
   return (
@@ -28,18 +56,18 @@ const Register = () => {
           {/* Email Field */}
           <div className="mb-4">
             <label
-              htmlFor="email"
+              htmlFor="id"
               className="block mb-2 text-sm font-medium text-gray-600"
             >
-              Email
+              Employee's ID
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              id="id"
+              name="id"
+              value={formData.id}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="Enter your employee ID"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-indigo-100 focus:border-indigo-300"
               required
             />
@@ -48,18 +76,18 @@ const Register = () => {
           {/* ID Field */}
           <div className="mb-4">
             <label
-              htmlFor="id"
+              htmlFor="fullname"
               className="block mb-2 text-sm font-medium text-gray-600"
             >
-              ID
+              Full Name
             </label>
             <input
               type="text"
-              id="id"
-              name="id"
-              value={formData.id}
+              id="fullname"
+              name="fullname"
+              value={formData.fullname}
               onChange={handleChange}
-              placeholder="Enter your ID"
+              placeholder="Enter your full name"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-indigo-100 focus:border-indigo-300"
               required
             />

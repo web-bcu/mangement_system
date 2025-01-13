@@ -17,14 +17,15 @@ function SideNavbar() {
   const [isEmployeeSubMenuOpen, setEmployeeSubMenuOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [navEmployee, setNavEmployee] = useState([]);
-  const {user} = useUserContext();
+  const { user } = useUserContext();
+  const router = useRouter();
   console.log(user)
 
   useEffect(() => {
-    if (user.role === "user") {
+    if (user && user.role === "USER") {
       setNavEmployee(EmployeeManagement);
     }
-    else if (user.role === "manager") {
+    else if (user && user.role === "MANAGER") {
       setNavEmployee(ManagerManagement);
     }
   }, [user])
@@ -34,6 +35,10 @@ function SideNavbar() {
   };
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+  const logout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  }
 
   return (
     <div>
@@ -279,7 +284,7 @@ function SideNavbar() {
 
           {/* Bottom Section: Logout */}
           <div className="p-3">
-            <button className="w-full flex items-center gap-4 text-gray-600 hover:text-white hover:bg-gray-900 p-3 rounded-lg transition duration-200">
+            <button className="w-full flex items-center gap-4 text-gray-600 hover:text-white hover:bg-gray-900 p-3 rounded-lg transition duration-200" onClick={logout}>
               <MdOutlineLogout className="text-2xl" />
               <span className="font-semibold  md:block">Logout</span>
             </button>
