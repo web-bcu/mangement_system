@@ -11,19 +11,6 @@ export default function AdminScreen() {
   const { user } = useUserContext();
   const [userData, setUserData] = useState([]);
 
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // const showModal = () => {
-  //     setIsModalOpen(true);
-  // };
-
-  // const handleOk = () => {
-  //     setIsModalOpen(false);
-  // };
-
-  // const handleCancel = () => {
-  //     setIsModalOpen(false);
-  // };
   const fetchAllUsers = async () => {
     const token = localStorage.getItem("token");
     try {

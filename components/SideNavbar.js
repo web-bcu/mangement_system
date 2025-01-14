@@ -257,7 +257,7 @@ function SideNavbar() {
               </div>
 
               {/* Active History */}
-              <NavItem
+              {/* <NavItem
                 href="/analytics"
                 icon={
                   <svg
@@ -276,13 +276,13 @@ function SideNavbar() {
                   </svg>
                 }
                 label="Active History"
-              />
+              /> */}
               {/* Settings */}
-              <NavItem
+              {/* <NavItem
                 href="/settings"
                 icon={<MdOutlineSettings />}
                 label="System Configuration"
-              />
+              /> */}
             </div>
           </div>
 

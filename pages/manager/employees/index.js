@@ -47,7 +47,7 @@ export default function ManagerScreen() {
   return (
     <Layout>
       <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
-        <div className="flex justify-center items-center text-3xl">Manage your employee here</div>
+        <div className="flex justify-center items-center text-3xl">Your Department</div>
         <Table employees={employees}/>
       </div>
     </Layout>

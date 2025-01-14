@@ -91,28 +91,6 @@ const SearchBar = () => {
 const Table = ({ showModal }) => {
     const [departments, setDepartments] = useState(null);
     const [managers, setManagers] = useState(null);
-    // const data = [
-    //     {
-    //         code: "DP001",
-    //         name: "HR",
-    //         managers: ["An", "Viet"]
-    //     },
-    //     {
-    //         code: "DP002",
-    //         name: "Developer",
-    //         managers: ["An", "Viet"]
-    //     },
-    //     {
-    //         code: "DP003",
-    //         name: "Finance",
-    //         managers: ["An", "Viet"]
-    //     },
-    //     {
-    //         code: "P004",
-    //         name: "Analysis",
-    //         managers: ["An", "Viet"]
-    //     },
-    // ];
     const fetchDepartments = async () => {
         const token = localStorage.getItem("token");
         try {

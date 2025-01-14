@@ -27,6 +27,7 @@ export default function EmployeeTasksManagement() {
         taskName: values.taskName,
         departmentId: user?.department,
         employeeId: values.employeeId,
+        description: values.description,
         deadline: dayjs(values.deadline).format("YYYY-MM-DD"),
         status: false
       }
@@ -235,6 +236,9 @@ const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
               </Select.Option>
             ))}
           </Select>
+        </Form.Item>
+        <Form.Item name="description" label="Task Description" rules={[{ required: true, message: 'Task Description' }]}>
+          <Input size="large" />
         </Form.Item>
         <Form.Item name="deadline" label="Deadline" rules={[{ required: true, message: 'Please select the deadline!' }]}>
           <DatePicker style={{ width: '100%' }} size="large"></DatePicker>
