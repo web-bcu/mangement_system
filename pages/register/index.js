@@ -30,7 +30,8 @@ const Register = () => {
       setIsSigningUp(true);
       const data = await axios.post("http://localhost:8080/api/v1/auth/register", formData)
       toast.success("Create Account Successfully!!!");
-      console.log(data);
+      // console.log(data);
+      router.push("/login");
     } catch (error){
       toast.error(`Error occured: ${error}`);
     } finally {
@@ -42,7 +43,6 @@ const Register = () => {
         role: "user"
       });
       setIsSigningUp(false);
-      router.push("/login");
     }
   };
 

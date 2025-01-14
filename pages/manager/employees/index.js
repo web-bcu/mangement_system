@@ -7,32 +7,12 @@ import { toast } from "sonner";
 
 export default function ManagerScreen() {
   const { user } = useUserContext();
-
-  if (user && user.role !== "MANAGER") {
-    return (
-      <Layout>
-        <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
-      </Layout>
-    )
-  }
-  return (
-    <Layout>
-      <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
-        <div className="flex justify-center items-center text-3xl">Manage your employee here</div>
-        <Table />
-      </div>
-    </Layout>
-  )
-}
-
-
-const Table = () => {
+  console.log(user?.department);
   const [employees, setEmployees] = useState(null);
-  const {user} = useUserContext();
 
   const fetchEmployees = async () => {
     const token = localStorage.getItem("token");
-    const dataToPass = { department: user.department }
+    const dataToPass = { department: user?.department }
     try {
       const response = await fetch("http://localhost:8080/api/v1/users/department", {
         method: "POST",
@@ -54,9 +34,28 @@ const Table = () => {
   }
 
   useEffect(() => {
-    fetchEmployees()
-  }, []);
+    fetchEmployees();
+  }, [user?.department]);
 
+  if (user && user.role !== "MANAGER") {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
+      </Layout>
+    )
+  }
+  return (
+    <Layout>
+      <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
+        <div className="flex justify-center items-center text-3xl">Manage your employee here</div>
+        <Table employees={employees}/>
+      </div>
+    </Layout>
+  )
+}
+
+
+const Table = ({employees}) => {
   return (
     <div className="overflow-x-auto mt-8">
       <table className="table-auto w-full text-sm text-left border-collapse border border-gray-300">
