@@ -93,7 +93,7 @@ function SideNavbar() {
       >
         <h1 className="flex gap-4 justify-center item-center mt-4">
           <span className="text-2xl md:pl-4 pl-0"><MdOutlineSpaceDashboard /></span>
-          <span className="text-base text-center cursor-pointer font-bold text-blue-900 border-b border-gray-100 pb-4 w-full md:block hidden">Virtual Dashboard</span>
+          <span className="text-base text-center cursor-pointer font-bold text-blue-900 border-b border-gray-100 pb-4 w-full md:block hidden">CSBU Management</span>
         </h1>
         <div className="flex flex-col justify-between">
           {/* Top Section: Navigation Links */}
@@ -309,6 +309,7 @@ function NavItem({ href, icon, label }) {
     </Link>
   );
 }
+
 const SubMenu = ({ item }) => {
   const { pathname } = useRouter();
 

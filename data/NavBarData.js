@@ -49,6 +49,22 @@ export const EmployeeManagement = [
 
 export const ManagerManagement = [
     {
+        href: "/manager/projects",
+        label: "Projects",
+        icon: (
+                <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                width="24"
+                height="24"
+                >
+                <path d="M21 3H3c-1.1 0-1.99.89-1.99 2L1 19c0 1.1.89 2 1.99 2h18c1.1 0 1.99-.89 1.99-2L23 5c0-1.11-.89-2-2-2zM12 8c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 8c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z" />
+                </svg>
+
+        )
+    },
+    {
         href: "/manager/tasks",
         label: "Tasks",
         icon: (

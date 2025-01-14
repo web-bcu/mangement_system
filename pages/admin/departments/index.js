@@ -1,14 +1,14 @@
-import { House , Search, X} from 'lucide-react';
+import { House, Search, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import Layout from '../../../components/Layout';
 import Head from "next/head";
-import {Button, Modal, Form, Input, InputNumber,DatePicker, Select} from 'antd'
+import { Button, Modal, Form, Input, InputNumber, DatePicker, Select } from 'antd'
 import { useUserContext } from '../../../context/UserContext';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 
 export default function Departments() {
-    const {user} = useUserContext();
+    const { user } = useUserContext();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const showModal = () => {
@@ -38,9 +38,9 @@ export default function Departments() {
                 <link rel="icon" href="/pro.ico" />
             </Head>
             <Layout>
-            <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
-                {/* <div className="flex items-center text-gray-600 space-x-2 mb-4"> */}
-                        {/* <span className="text-gray-500 group" onClick={()=> backToHome()}>
+                <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
+                    {/* <div className="flex items-center text-gray-600 space-x-2 mb-4"> */}
+                    {/* <span className="text-gray-500 group" onClick={()=> backToHome()}>
                         <House className="text-gray-500 group-hover:text-black transition-colors duration-300" size={20}/>
                         </span>
                         <span className="text-gray-400">/</span>
@@ -54,7 +54,7 @@ export default function Departments() {
                         handleCancel={handleCancel}
                     />
                     <SearchBar />
-                    <Table showModal={showModal}/>
+                    <Table showModal={showModal} />
                 </div>
             </Layout>
 
@@ -76,20 +76,21 @@ const SearchBar = () => {
             </select>
             <div className="flex flex-col md:flex-row space-x-0 md:space-x-2">
                 <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition flex items-center space-x-2 mb-2 md:mb-0">
-                <Search size={15} />
-                <span className="ml-2">Search</span>
+                    <Search size={15} />
+                    <span className="ml-2">Search</span>
                 </button>
                 <button className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500 transition flex items-center space-x-2">
-                <X size={15} />
-                <span className="ml-2">Reset</span>
+                    <X size={15} />
+                    <span className="ml-2">Reset</span>
                 </button>
             </div>
         </div>
     );
 }
 
-const Table = ({showModal})=> {
+const Table = ({ showModal }) => {
     const [departments, setDepartments] = useState(null);
+    const [managers, setManagers] = useState(null);
     // const data = [
     //     {
     //         code: "DP001",
@@ -112,7 +113,7 @@ const Table = ({showModal})=> {
     //         managers: ["An", "Viet"]
     //     },
     // ];
-    const fetchDepartments = async() => {
+    const fetchDepartments = async () => {
         const token = localStorage.getItem("token");
         try {
             const response = await fetch("http://localhost:8080/api/v1/departments", {
@@ -126,43 +127,72 @@ const Table = ({showModal})=> {
 
             const departmentData = await response.json();
             setDepartments(departmentData);
-        } catch(error) {
+        } catch (error) {
             console.error("Error occured:", error);
             toast.error("Something went wrong!!!");
         }
     }
-    
+
+    const fetchManagers = async () => {
+        const token = localStorage.getItem("token");
+        const dataToPass = { role: "MANAGER" }
+        try {
+            const response = await fetch("http://localhost:8080/api/v1/users/role", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+
+                },
+                body: JSON.stringify(dataToPass)
+            });
+
+            if (!response.ok) throw new Error("Failed to fetch managers");
+
+            const managerData = await response.json();
+            setManagers(managerData);
+        } catch (error) {
+            console.error("Error occured:", error);
+            toast.error("Something went wrong!!!");
+        }
+    }
+
     useEffect(() => {
         fetchDepartments();
+        fetchManagers();
     }, []);
 
     return (
         <div className="overflow-x-auto">
-        <Button 
-            size="large"
-            className="mb-2"
-            onClick={showModal}>
-            Create Department
-        </Button>
-        <table className="table-auto w-full text-sm text-left border-collapse border border-gray-300">
-            <thead className="bg-gray-100">
-            <tr>
-                <th className="border px-4 py-2">Department ID</th>
-                <th className="border px-4 py-2">Department Name</th>
-                <th className="border px-4 py-2">Managers</th>
-            </tr>
-            </thead>
-            <tbody>
-            {departments && departments.map((department, index) => (
-                <tr key={index} className="hover:bg-gray-100">
-                <td className="border px-4 py-2">{department.departmentId}</td>
-                <td className="border px-4 py-2">{department.departmentName}</td>
-                <td className="border px-4 py-2">managers</td>
-                </tr>
-            ))}
-            </tbody>
-        </table>
-        {/* <div className="flex justify-between items-center mt-4">
+            <Button
+                size="large"
+                className="mb-2"
+                onClick={showModal}>
+                Create Department
+            </Button>
+            <table className="table-auto w-full text-sm text-left border-collapse border border-gray-300">
+                <thead className="bg-gray-100">
+                    <tr>
+                        <th className="border px-4 py-2">Department ID</th>
+                        <th className="border px-4 py-2">Department Name</th>
+                        <th className="border px-4 py-2">Managers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {departments && departments.map((department, index) => {
+                        const dep_managers = managers?.filter((manager) => manager.department === department.departmentId)
+                            .map((manager) => manager.fullname)
+                        return (
+                            <tr key={index} className="hover:bg-gray-100">
+                                <td className="border px-4 py-2">{department.departmentId}</td>
+                                <td className="border px-4 py-2">{department.departmentName}</td>
+                                <td className="border px-4 py-2">{dep_managers?.join(", ")}</td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+            {/* <div className="flex justify-between items-center mt-4">
             <span className="text-sm text-gray-600">1-10 của 76 Mục</span>
             <div className="flex space-x-1">
             <button className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">1</button>
@@ -180,7 +210,7 @@ const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-  
+
     // Function to save the department data
     const saveDepartment = async (values) => {
         setLoading(true);
@@ -195,10 +225,10 @@ const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
                 },
                 body: JSON.stringify(values),
             });
-    
+
             const data = await response.json();
             if (response.ok) {
-            // Successfully saved the department
+                // Successfully saved the department
                 console.log("Department created successfully", data);
                 handleOk(data);  // Pass the saved department data to parent
                 form.resetFields();  // Reset the form fields
@@ -215,7 +245,7 @@ const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
             router.reload();
         }
     };
-  
+
     const modal_footer = [
         <Button
             size="large"
@@ -230,22 +260,22 @@ const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
             className="bg-[rgb(115,222,65)] text-white no-transition"
             key="submit"
             onClick={() => {
-            form
-                .validateFields()
-                .then((values) => {
-                    saveDepartment(values);  // Call saveDepartment instead of handleOk
-                })
-                .then(() => handleCancel())
-                .catch((info) => {
-                console.log("Validate Failed:", info);
-                });
+                form
+                    .validateFields()
+                    .then((values) => {
+                        saveDepartment(values);  // Call saveDepartment instead of handleOk
+                    })
+                    .then(() => handleCancel())
+                    .catch((info) => {
+                        console.log("Validate Failed:", info);
+                    });
             }}
             loading={loading}
         >
             {loading ? "Creating..." : "Create"}
         </Button>,
     ];
-  
+
     return (
         <Modal
             title="Create New Department"
@@ -261,18 +291,18 @@ const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
                     name="departmentId"
                     label="Department ID"
                     rules={[
-                    { required: true, message: "Please input the department ID!" },
+                        { required: true, message: "Please input the department ID!" },
                     ]}
                 >
                     <Input size="large" />
                 </Form.Item>
-        
+
                 {/* Department Name Field */}
                 <Form.Item
                     name="departmentName"
                     label="Department Name"
                     rules={[
-                    { required: true, message: "Please input the department name!" },
+                        { required: true, message: "Please input the department name!" },
                     ]}
                 >
                     <Input size="large" />

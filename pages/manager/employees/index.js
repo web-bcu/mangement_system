@@ -1,51 +1,85 @@
 import { useUserContext } from "../../../context/UserContext";
 import Layout from "../../../components/Layout";
 import { data } from "./data_demo";
-export default function EmployeeScreen() {
-    const {user} = useUserContext();
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-    if (user && user.role !== "MANAGER") {
-        return (
-            <Layout>
-                <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
-            </Layout>
-        )
-    }
+
+export default function ManagerScreen() {
+  const { user } = useUserContext();
+
+  if (user && user.role !== "MANAGER") {
     return (
-        <Layout>
-            <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
-                <div className="flex justify-center items-center text-3xl">Manage your employee here</div>
-                <Table/>
-            </div>
-        </Layout>
+      <Layout>
+        <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
+      </Layout>
     )
+  }
+  return (
+    <Layout>
+      <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
+        <div className="flex justify-center items-center text-3xl">Manage your employee here</div>
+        <Table />
+      </div>
+    </Layout>
+  )
 }
-const Table = ()=> {
-  
 
-    return (
-  <div className="overflow-x-auto mt-8">
-    <table className="table-auto w-full text-sm text-left border-collapse border border-gray-300">
-      <thead className="bg-gray-100">
-        <tr>
-          <th className="border px-4 py-2">Employee ID</th>
-          <th className="border px-4 py-2">Employee Name</th>
-          <th className="border px-4 py-2">Department</th>
-          <th className="border px-4 py-2">Role</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((row, index) => (
-          <tr key={index} className="hover:bg-gray-100">
-            <td className="border px-4 py-2">{row.EmployeeID}</td>
-            <td className="border px-4 py-2">{row.EmployeeName}</td>
-            <td className="border px-4 py-2">{row.DateOfBirth}</td>
-            <td className="border px-4 py-2">{row.YearsOfExperience}</td>
+
+const Table = () => {
+  const [employees, setEmployees] = useState(null);
+  const {user} = useUserContext();
+
+  const fetchEmployees = async () => {
+    const token = localStorage.getItem("token");
+    const dataToPass = { department: user.department }
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/users/department", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToPass)
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch employees");
+
+      const employeeData = await response.json();
+      setEmployees(employeeData);
+    } catch (error) {
+      console.error("Error occured:", error);
+      toast.error("Something went wrong!!!");
+    }
+  }
+
+  useEffect(() => {
+    fetchEmployees()
+  }, []);
+
+  return (
+    <div className="overflow-x-auto mt-8">
+      <table className="table-auto w-full text-sm text-left border-collapse border border-gray-300">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="border px-4 py-2">Employee ID</th>
+            <th className="border px-4 py-2">Employee Name</th>
+            <th className="border px-4 py-2">Department</th>
+            <th className="border px-4 py-2">Role</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
-    {/* <div className="flex justify-between items-center mt-4">
+        </thead>
+        <tbody>
+          {employees?.map((employee) => (
+            <tr key={employee.id} className="hover:bg-gray-100">
+              <td className="border px-4 py-2">{employee.id}</td>
+              <td className="border px-4 py-2">{employee.fullname}</td>
+              <td className="border px-4 py-2">{employee.department}</td>
+              <td className="border px-4 py-2">{employee.role}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {/* <div className="flex justify-between items-center mt-4">
       <span className="text-sm text-gray-600">1-10 of 76 Items</span>
       <div className="flex space-x-1">
         <button className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">1</button>
@@ -55,8 +89,7 @@ const Table = ()=> {
         <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">10</button>
       </div>
     </div> */}
-  </div>
-  
-    );
-  }
-  
+    </div>
+
+  );
+}
