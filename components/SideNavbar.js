@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { useRouter } from 'next/router';
-import {EmployeeManagement, FinanceManagement, ManagerManagement, AdminManagement } from "../data/NavBarData";
+import { EmployeeManagement, FinanceManagement, ManagerManagement, AdminManagement } from "../data/NavBarData";
 
 import {
   MdOutlineSpaceDashboard,
@@ -67,29 +67,28 @@ function SideNavbar() {
           </svg>
         </button>
         {isSidebarOpen === true && (<button
-            onClick={toggleSidebar}
-            className="absolute top-4 right-4 text-gray-600 hover:text-white p-2"
+          onClick={toggleSidebar}
+          className="absolute top-4 right-4 text-gray-600 hover:text-white p-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>)}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>)}
       </div>
       <div
-        className={`h-screen bg-white shadow-lg md:w-70 w-2/7 overflow-auto fixed left-0 top-0 z-50 transition-transform duration-300 ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 md:static`}
+        className={`h-screen bg-white shadow-lg md:w-70 w-2/7 overflow-auto fixed left-0 top-0 z-50 transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 md:static`}
       >
         <h1 className="flex gap-4 justify-center item-center mt-4">
           <span className="text-2xl md:pl-4 pl-0"><MdOutlineSpaceDashboard /></span>
@@ -102,58 +101,33 @@ function SideNavbar() {
               <NavItem
                 href="/dashboard"
                 icon={<MdOutlineSpaceDashboard />}
-                label="Home"
+                label="Dashboard"
               />
-              {/* <NavItem
-                href="/profile"
-                icon={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M4 17l8 5 8-5m-16-5l8 5 8-5M4 7l8-5 8 5-8 5-8-5z"
-                    />
-                  </svg>
-                }
-                label="Quản lý ngân sách"
-              /> */}
               {/* Emplyee Management */}
               <div>
                 <div className="flex items-center gap-4 text-gray-600 hover:text-white hover:bg-gray-900 p-3 rounded-lg cursor-pointer transition duration-200 ">
                   <div className="text-2xl">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width="24"
-                      height="24"
-                    >
-                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.33-8 4v2h16v-2c0-2.67-5.33-4-8-4z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                     </svg>
+
                   </div>
                   <span className="font-semibold  md:block">Employee Management</span>
 
                   {/* Dropdown button */}
                   <button
-                      className="ml-auto p-1 transition-transform duration-200 "
-                      onClick={() => handleSubMenuToggle(setEmployeeSubMenuOpen)} 
-                    >
-                      {isEmployeeSubMenuOpen ? (
-                        <svg 
-                          xmlns="http://www.w3.org/2000/svg" 
-                          className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
+                    className="ml-auto p-1 transition-transform duration-200 "
+                    onClick={() => handleSubMenuToggle(setEmployeeSubMenuOpen)}
+                  >
+                    {isEmployeeSubMenuOpen ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
 
-                      ) : (
-                        <svg
+                    ) : (
+                      <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="w-6 h-6"
                         fill="none"
@@ -167,42 +141,21 @@ function SideNavbar() {
                           d="M15 19l-7-7 7-7"
                         />
                       </svg>
-                      )}
-                    </button> 
+                    )}
+                  </button>
                 </div>
-                  {isEmployeeSubMenuOpen && (
+                {isEmployeeSubMenuOpen && (
                   <div className="">
                     <SubMenu item={navEmployee} />
                   </div>
-                    )}
+                )}
               </div>
-              {/* <NavItem
-                href="/comments"
-                icon={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M4 17l8 5 8-5m-16-5l8 5 8-5M4 7l8-5 8 5-8 5-8-5z"
-                    />
-                  </svg>
-                }
-                label="Quản lý chi tiết"
-              /> */}
-
               {/* Finance Management */}
               <div>
-                <div 
+                <div
                   className="flex items-center gap-4 text-gray-600 hover:text-white hover:bg-gray-900 p-3 rounded-lg cursor-pointer transition duration-200 "
-                  onClick={() => handleSubMenuToggle(setFinanceSubMenuOpen)} 
-                  >
+                  onClick={() => handleSubMenuToggle(setFinanceSubMenuOpen)}
+                >
                   <div className="text-2xl">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -225,35 +178,35 @@ function SideNavbar() {
                     className="ml-auto p-1 transition-transform duration-200"
                   >
                     {isFinanceSubMenuOpen ? (
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                       </svg>
 
                     ) : (
                       <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-6 h-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-6 h-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15 19l-7-7 7-7"
+                        />
+                      </svg>
                     )}
                   </button>
                 </div>
                 {isFinanceSubMenuOpen && (
-                    <div className="">
-                      <SubMenu item={FinanceManagement} />
-                    </div>
-                  )}
+                  <div className="">
+                    <SubMenu item={FinanceManagement} />
+                  </div>
+                )}
               </div>
 
               {/* Active History */}
@@ -319,9 +272,8 @@ const SubMenu = ({ item }) => {
         return (
           <Link key={idx} href={subItem.href}>
             <div
-              className={`flex items-center gap-4 text-gray-600 hover:text-white hover:bg-gray-900 p-3 rounded-lg cursor-pointer transition duration-200 ${
-                subItem.href === pathname ? 'font-bold' : ''
-              }`}
+              className={`flex items-center gap-4 text-gray-600 hover:text-white hover:bg-gray-900 p-3 rounded-lg cursor-pointer transition duration-200 ${subItem.href === pathname ? 'font-bold' : ''
+                }`}
             >
               <div className="text-2xl">{subItem.icon}</div>
               <span>{subItem.label}</span>

@@ -14,6 +14,8 @@ export default function EmployeeTasksManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useUserContext();
   const [tasks, setTasks] = useState(null);
+  const [searchName, setSearchName] = useState("");
+  const [searchID, setSearchID] = useState("");
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -91,13 +93,6 @@ export default function EmployeeTasksManagement() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  // if (user.role !== "manager") {
-  //     return (
-  //         <Layout>
-  //             <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
-  //         </Layout>
-  //     )
-  // }
 
   const fetchTasksByDepartment = async () => {
     const token = localStorage.getItem("token");
@@ -123,6 +118,16 @@ export default function EmployeeTasksManagement() {
     fetchTasksByDepartment();
   }, [user?.department]);
 
+  const filteredTasks = tasks?.filter((task) => {
+    const matchesName = task.taskName
+      .toLowerCase()
+      .includes(searchName.toLowerCase());
+    const matchesId = task.id
+      .toLowerCase()
+      .includes(searchID.toLowerCase());
+    return matchesName && matchesId;
+  });
+
   if (user && user.role !== "MANAGER") {
     return (
       <Layout>
@@ -135,7 +140,8 @@ export default function EmployeeTasksManagement() {
     <Layout>
       <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
         <div className="flex justify-center items-center text-3xl">Manage your employee task here</div>
-        <Table showModal={showModal} tasks={tasks} deleteTask={deleteTask} updateTask={updateTask}/>
+        <SearchBar searchID={searchID} setSearchID={setSearchID} searchName={searchName} setSearchName={setSearchName} />
+        <Table showModal={showModal} tasks={filteredTasks} deleteTask={deleteTask} updateTask={updateTask} />
         <CreateModal
           isModalOpen={isModalOpen}
           handleOk={handleOk}
@@ -144,8 +150,27 @@ export default function EmployeeTasksManagement() {
       </div>
     </Layout>
   )
-
 }
+
+const SearchBar = ({ searchName, setSearchName, searchID, setSearchID }) => (
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 mt-4">
+    <input
+      type="text"
+      placeholder="Search by Task ID"
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchID}
+      onChange={e => setSearchID(e.target.value)}
+    />
+
+    <input
+      type="text"
+      placeholder="Search by Task Name"
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchName}
+      onChange={e => setSearchName(e.target.value)}
+    />
+  </div>
+);
 
 const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
   const [form] = Form.useForm();
@@ -303,7 +328,7 @@ const Table = ({ showModal, tasks, deleteTask, updateTask }) => {
                   </div>
                 ) : (
                   <div className=" flex items-center justify-center rounded-full gap-7">
-                    <button><CheckCircle className="text-green-400 w-8 h-8" onClick={() => updateTask(task.id)}/></button>
+                    <button><CheckCircle className="text-green-400 w-8 h-8" onClick={() => updateTask(task.id)} /></button>
                   </div>
                 )}
               </td>
@@ -311,16 +336,6 @@ const Table = ({ showModal, tasks, deleteTask, updateTask }) => {
           ))}
         </tbody>
       </table>
-      {/* <div className="flex justify-between items-center mt-4">
-      <span className="text-sm text-gray-600">1-10 of 76 Items</span>
-      <div className="flex space-x-1">
-        <button className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">1</button>
-        <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">2</button>
-        <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">3</button>
-        <span>...</span>
-        <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">10</button>
-      </div>
-    </div> */}
     </div>
 
   );

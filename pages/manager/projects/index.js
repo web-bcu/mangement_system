@@ -15,15 +15,18 @@ export default function DepartmentProject() {
     const [isEditMode, setIsEditMode] = useState(false);
     const [projects, setProjects] = useState([]);
     const [currentProject, setCurrentProject] = useState(null);
+    const [searchName, setSearchName] = useState("");
+    const [searchID, setSearchID] = useState("");
+    const [searchYear, setSearchYear] = useState("");
     // const router = useRouter();
 
     const fetchProjectsByDepartment = async () => {
         const token = localStorage.getItem("token");
-        const dataToPass = {departmentId: user?.department}
+        const dataToPass = { departmentId: user?.department }
         try {
             const response = await fetch("http://localhost:8080/api/v1/projects/department", {
                 method: "POST",
-                headers: { 
+                headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
@@ -42,6 +45,19 @@ export default function DepartmentProject() {
     useEffect(() => {
         fetchProjectsByDepartment();
     }, [user?.department]);
+
+    const filteredProjects = projects?.filter((project) => {
+        const matchesName = project.projectName
+            .toLowerCase()
+            .includes(searchName.toLowerCase());
+        const matchesId = project.projectId
+            .toLowerCase()
+            .includes(searchID.toLowerCase());
+        const matchesYear = project.startDate
+            .toLowerCase()
+            .includes(searchYear.toLowerCase());
+        return matchesName && matchesId && matchesYear;
+    });
 
     const showModal = (project = null) => {
         setIsModalOpen(true);
@@ -112,11 +128,11 @@ export default function DepartmentProject() {
             <Layout>
                 <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
                     <h1 className="text-2xl font-semibold mb-4">Projects Management</h1>
-                    <SearchBar />
+                    <SearchBar searchID={searchID} setSearchID={setSearchID} searchName={searchName} setSearchName={setSearchName} searchYear={searchYear} setSearchYear={setSearchYear} />
                     {/* <Button className="mb-4" onClick={() => showModal()}>
                         Create Project
                     </Button> */}
-                    <ProjectsTable projects={projects} onEdit={showModal} />
+                    <ProjectsTable projects={filteredProjects} onEdit={showModal} />
                     <CreateEditProjectModal
                         isModalOpen={isModalOpen}
                         isEditMode={isEditMode}
@@ -130,19 +146,32 @@ export default function DepartmentProject() {
     );
 }
 
-const SearchBar = () => (
+const SearchBar = ({ searchID, setSearchID, searchName, setSearchName, searchYear, setSearchYear }) => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <input
             type="text"
-            placeholder="Search by Project Code/Name"
+            placeholder="Search by Project ID"
             className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+            value={searchID}
+            onChange={e => setSearchID(e.target.value)}
         />
-        <select className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500">
-            <option>Select year</option>
-            <option>2024</option>
-            <option>2023</option>
+        <input
+            type="text"
+            placeholder="Search by Project Name"
+            className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+            value={searchName}
+            onChange={e => setSearchName(e.target.value)}
+        />
+        <select
+            className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+            value={searchYear}
+            onChange={e => setSearchYear(e.target.value)}
+        >
+            <option value="">All years</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
         </select>
-        <div className="flex space-x-2">
+        {/* <div className="flex space-x-2">
             <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition flex items-center">
                 <Search size={15} />
                 <span className="ml-2">Search</span>
@@ -151,7 +180,7 @@ const SearchBar = () => (
                 <X size={15} />
                 <span className="ml-2">Reset</span>
             </button>
-        </div>
+        </div> */}
     </div>
 );
 
@@ -164,7 +193,7 @@ const ProjectsTable = ({ projects, onEdit }) => (
                     <th className="border px-4 py-2">Project Name</th>
                     <th className="border px-4 py-2">Start Date</th>
                     <th className="border px-4 py-2">End Date</th>
-                    <th className="border px-4 py-2">Department</th>
+                    {/* <th className="border px-4 py-2">Department</th> */}
                     <th className="border px-4 py-2">Description</th>
                     <th className="border px-4 py-2">Actions</th>
                 </tr>
@@ -176,7 +205,7 @@ const ProjectsTable = ({ projects, onEdit }) => (
                         <td className="border px-4 py-2">{project.projectName}</td>
                         <td className="border px-4 py-2">{project.startDate}</td>
                         <td className="border px-4 py-2">{project.endDate}</td>
-                        <td className="border px-4 py-2">{project.departmentId}</td>
+                        {/* <td className="border px-4 py-2">{project.departmentId}</td> */}
                         <td className="border px-4 py-2">{project.description}</td>
                         <td className="border px-4 py-2">
                             <Button size="small" onClick={() => onEdit(project)}>

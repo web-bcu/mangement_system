@@ -12,6 +12,8 @@ import dayjs from "dayjs";
 export default function EmployeeTasksManagement() {
   const { user } = useUserContext();
   const [tasks, setTasks] = useState(null);
+  const [searchName, setSearchName] = useState("");
+  const [searchID, setSearchID] = useState("");
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -56,13 +58,6 @@ export default function EmployeeTasksManagement() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  // if (user.role !== "manager") {
-  //     return (
-  //         <Layout>
-  //             <div className="flex justify-center items-center text-3xl">You are not allowed to access this page</div>
-  //         </Layout>
-  //     )
-  // }
 
   const fetchTaskByEmployee = async () => {
     const token = localStorage.getItem("token");
@@ -88,6 +83,16 @@ export default function EmployeeTasksManagement() {
     fetchTaskByEmployee();
   }, [user?.id]);
 
+  const filteredTasks = tasks?.filter((task) => {
+    const matchesName = task.taskName
+      .toLowerCase()
+      .includes(searchName.toLowerCase());
+    const matchesId = task.id
+      .toLowerCase()
+      .includes(searchID.toLowerCase());
+    return matchesName && matchesId;
+  });
+
   if (user && user.role !== "USER") {
     return (
       <Layout>
@@ -99,16 +104,35 @@ export default function EmployeeTasksManagement() {
   return (
     <Layout>
       <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
-        <div className="flex justify-center items-center text-3xl">Your task here</div>
-        <Table showModal={showModal} tasks={tasks} deleteTask={deleteTask} updateTask={updateTask}/>
+        <div className="flex justify-center items-center text-3xl">My tasks</div>
+        <SearchBar searchName={searchName} setSearchName={setSearchName} searchID={searchID} setSearchID={setSearchID}/>
+        <Table showModal={showModal} tasks={filteredTasks} deleteTask={deleteTask} updateTask={updateTask} />
       </div>
     </Layout>
   )
-
 }
 
+const SearchBar = ({ searchName, setSearchName, searchID, setSearchID }) => (
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 mt-4">
+    <input
+      type="text"
+      placeholder="Search by Task ID"
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchID}
+      onChange={e => setSearchID(e.target.value)}
+    />
 
-const Table = ({ showModal, tasks, deleteTask, updateTask }) => {
+    <input
+      type="text"
+      placeholder="Search by Task Name"
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchName}
+      onChange={e => setSearchName(e.target.value)}
+    />
+  </div>
+);
+
+const Table = ({ tasks, deleteTask, updateTask }) => {
 
   return (
     <div className="overflow-x-auto mt-8">
@@ -156,7 +180,7 @@ const Table = ({ showModal, tasks, deleteTask, updateTask }) => {
                   </div>
                 ) : (
                   <div className=" flex items-center justify-center rounded-full gap-7">
-                    <button><CheckCircle className="text-green-400 w-8 h-8" onClick={() => updateTask(task.id)}/></button>
+                    <button><CheckCircle className="text-green-400 w-8 h-8" onClick={() => updateTask(task.id)} /></button>
                   </div>
                 )}
               </td>

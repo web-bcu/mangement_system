@@ -10,6 +10,12 @@ import { useRouter } from "next/router";
 export default function AdminScreen() {
   const { user } = useUserContext();
   const [userData, setUserData] = useState([]);
+  const [searchName, setSearchName] = useState("");
+  const [searchID, setSearchID] = useState("");
+  const [searchRole, setSearchRole] = useState("");
+  const [departments, setDepartments] = useState(null);
+  const [searchDepartment, setSearchDepartments] = useState("");
+  console.log(departments);
 
   const fetchAllUsers = async () => {
     const token = localStorage.getItem("token");
@@ -31,9 +37,46 @@ export default function AdminScreen() {
     }
   }
 
+  const fetchDepartments = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/departments", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch departments");
+
+      const departmentData = await response.json();
+      setDepartments(departmentData);
+    } catch (error) {
+      console.error("Error occured:", error);
+      toast.error("Something went wrong!!!");
+    }
+  }
+
   useEffect(() => {
     fetchAllUsers();
+    fetchDepartments();
   }, []);
+
+  const filteredEmployee = userData?.filter((user) => {
+    const matchesName = user.fullname
+      .toLowerCase()
+      .includes(searchName.toLowerCase());
+    const matchesId = user.id
+      .toLowerCase()
+      .includes(searchID.toLowerCase());
+    const matchesRole = user.role
+      .toLowerCase()
+      .includes(searchRole.toLowerCase());
+    const matchDepartment = user.department
+      .toLowerCase()
+      .includes(searchDepartment.toLowerCase());
+    return matchesName && matchesId && matchesRole && matchDepartment;
+  });
 
   if (user && user.role !== "ADMIN") {
     return (
@@ -47,16 +90,55 @@ export default function AdminScreen() {
     <Layout>
       <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
         <div className="flex justify-center items-center text-3xl">Manage your employee here</div>
-        {/* <UpdateModal
-                    isModalOpen={isModalOpen}
-                    handleOk={handleOk}
-                    handleCancel={handleCancel}
-                /> */}
-        <Table userData={userData} />
+        <SearchBar searchID={searchID} setSearchID={setSearchID} searchName={searchName} setSearchName={setSearchName} searchRole={searchRole} setSearchRole={setSearchRole} departments={departments} searchDepartment={searchDepartment} setSearchDepartments={setSearchDepartments}/>
+        <Table userData={filteredEmployee} />
       </div>
     </Layout>
   )
 }
+
+const SearchBar = ({ searchName, setSearchName, searchID, setSearchID, searchRole, setSearchRole, departments, searchDepartment, setSearchDepartments }) => (
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 mt-4">
+    <input
+      type="text"
+      placeholder="Search by Employee ID"
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchID}
+      onChange={e => setSearchID(e.target.value)}
+    />
+
+    <input
+      type="text"
+      placeholder="Search by Employee Name"
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchName}
+      onChange={e => setSearchName(e.target.value)}
+    />
+    <select
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchRole}
+      onChange={e => setSearchRole(e.target.value)}
+    >
+      <option value="">All roles</option>
+      <option value="ADMIN">Admin</option>
+      <option value="MANAGER">Manager</option>
+      <option value="USER">User</option>
+    </select>
+    <select
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchDepartment}
+      onChange={e => setSearchDepartments(e.target.value)}
+    >
+      <option value="">All roles</option>
+      {departments?.map(department => (
+        <option key={department.departmentId} value={department.departmentId}>{department.departmentName}</option>
+      ))}
+      {/* <option value="ADMIN">Admin</option>
+      <option value="MANAGER">Manager</option>
+      <option value="USER">User</option> */}
+    </select>
+  </div>
+);
 
 const Table = ({ userData }) => {
   const router = useRouter();

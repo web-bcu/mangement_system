@@ -14,6 +14,8 @@ export default function ProjectsPage() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [projects, setProjects] = useState([]);
   const [currentProject, setCurrentProject] = useState(null);
+  const [searchName, setSearchName] = useState("");
+  const [searchID, setSearchID] = useState("");
 
   const fetchProjects = async () => {
     const token = localStorage.getItem("token");
@@ -46,6 +48,16 @@ export default function ProjectsPage() {
     setIsModalOpen(false);
     setCurrentProject(null);
   };
+
+  const filteredProjects = projects?.filter((project) => {
+    const matchesName = project.projectName
+      .toLowerCase()
+      .includes(searchName.toLowerCase());
+    const matchesId = project.projectId
+      .toLowerCase()
+      .includes(searchID.toLowerCase());
+    return matchesName && matchesId;
+  });
 
   const handleFormSubmit = async (values) => {
     const token = localStorage.getItem("token");
@@ -105,11 +117,11 @@ export default function ProjectsPage() {
       <Layout>
         <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
           <h1 className="text-2xl font-semibold mb-4">Projects Management</h1>
-          <SearchBar />
           <Button className="mb-4" onClick={() => showModal()}>
             Create Project
           </Button>
-          <ProjectsTable projects={projects} onEdit={showModal} />
+          <SearchBar searchID={searchID} setSearchID={setSearchID} searchName={searchName} setSearchName={setSearchName}/>
+          <ProjectsTable projects={filteredProjects} onEdit={showModal} />
           <CreateEditProjectModal
             isModalOpen={isModalOpen}
             isEditMode={isEditMode}
@@ -123,27 +135,37 @@ export default function ProjectsPage() {
   );
 }
 
-const SearchBar = () => (
+const SearchBar = ({ searchName, setSearchName, searchID, setSearchID }) => (
   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
     <input
       type="text"
-      placeholder="Search by Project Code/Name"
+      placeholder="Search by Project ID"
       className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchID}
+      onChange={e => setSearchID(e.target.value)}
     />
-    <select className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500">
+
+    <input
+      type="text"
+      placeholder="Search by Project Name"
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchName}
+      onChange={e => setSearchName(e.target.value)}
+    />
+    {/* <select className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500">
       <option>Select year</option>
       <option>2024</option>
       <option>2023</option>
-    </select>
+    </select> */}
     <div className="flex space-x-2">
-      <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition flex items-center">
+      {/* <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition flex items-center">
         <Search size={15} />
         <span className="ml-2">Search</span>
       </button>
       <button className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500 transition flex items-center">
         <X size={15} />
         <span className="ml-2">Reset</span>
-      </button>
+      </button> */}
     </div>
   </div>
 );
@@ -237,7 +259,7 @@ const CreateEditProjectModal = ({ isModalOpen, isEditMode, project, handleCancel
         </Button>,
         <Button
           key="submit"
-          onClick={() => form.validateFields().then((values) => handleSubmit({...values, departmentId: department}))}
+          onClick={() => form.validateFields().then((values) => handleSubmit({ ...values, departmentId: department }))}
           className="bg-green-500 text-white"
         >
           {isEditMode ? "Update" : "Create"}

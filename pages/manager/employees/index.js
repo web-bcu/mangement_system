@@ -9,6 +9,8 @@ export default function ManagerScreen() {
   const { user } = useUserContext();
   console.log(user?.department);
   const [employees, setEmployees] = useState(null);
+  const [searchName, setSearchName] = useState("");
+  const [searchID, setSearchID] = useState("");
 
   const fetchEmployees = async () => {
     const token = localStorage.getItem("token");
@@ -37,6 +39,16 @@ export default function ManagerScreen() {
     fetchEmployees();
   }, [user?.department]);
 
+  const filteredEmployee = employees?.filter((user) => {
+    const matchesName = user.fullname
+      .toLowerCase()
+      .includes(searchName.toLowerCase());
+    const matchesId = user.id
+      .toLowerCase()
+      .includes(searchID.toLowerCase());
+    return matchesName && matchesId;
+  });
+
   if (user && user.role !== "MANAGER") {
     return (
       <Layout>
@@ -48,12 +60,42 @@ export default function ManagerScreen() {
     <Layout>
       <div className="p-6 w-full bg-white shadow-md rounded-md h-full">
         <div className="flex justify-center items-center text-3xl">Your Department</div>
-        <Table employees={employees}/>
+        <SearchBar searchID={searchID} setSearchID={setSearchID} searchName={searchName} setSearchName={setSearchName}/>
+        <Table employees={filteredEmployee}/>
       </div>
     </Layout>
   )
 }
 
+const SearchBar = ({ searchName, setSearchName, searchID, setSearchID }) => (
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 mt-4">
+    <input
+      type="text"
+      placeholder="Search by Employee ID"
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchID}
+      onChange={e => setSearchID(e.target.value)}
+    />
+
+    <input
+      type="text"
+      placeholder="Search by Employee Name"
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchName}
+      onChange={e => setSearchName(e.target.value)}
+    />
+    {/* <select
+      className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+      value={searchRole}
+      onChange={e => setSearchRole(e.target.value)}
+    >
+      <option value="">All roles</option>
+      <option value="ADMIN">Admin</option>
+      <option value="MANAGER">Manager</option>
+      <option value="USER">User</option>
+    </select> */}
+  </div>
+);
 
 const Table = ({employees}) => {
   return (
@@ -78,17 +120,6 @@ const Table = ({employees}) => {
           ))}
         </tbody>
       </table>
-      {/* <div className="flex justify-between items-center mt-4">
-      <span className="text-sm text-gray-600">1-10 of 76 Items</span>
-      <div className="flex space-x-1">
-        <button className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">1</button>
-        <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">2</button>
-        <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">3</button>
-        <span>...</span>
-        <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-300">10</button>
-      </div>
-    </div> */}
     </div>
-
   );
 }
