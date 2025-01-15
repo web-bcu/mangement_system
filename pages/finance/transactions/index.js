@@ -29,7 +29,7 @@ export default function Transaction() {
     if (searchQuery) searchParams.append('searchQuery', searchQuery);
     if (startDate) searchParams.append('startDate', startDate);
     if (endDate) searchParams.append('endDate', endDate);
-    if (selectedBudget) searchParams.append('budget', selectedBudget);
+    if (selectedBudget) searchParams.append('currency', selectedBudget);
     if (selectedStatus) searchParams.append('status', selectedStatus);
     setCurrentPage(1);  
     setSearchParams(searchParams.toString())
@@ -38,7 +38,7 @@ export default function Transaction() {
 
 
   const { data, error, isLoading } = useSWR(
-    `/api/transaction?page=${currentPage}&${searchParams}`,
+    `http://localhost:8080/api/v1/finance/transactions?page=${currentPage}&${searchParams}`,
     getFetcher,
     {
       refreshInterval: 0,
@@ -75,13 +75,15 @@ export default function Transaction() {
                 isCreateModalOpen={isCreateModalOpen}
                 handleOk={handleOk}
                 handleCancel={handleCancel}
+                currentPage={currentPage}
+                searchParams={searchParams}
               />
         </div>
       </Layout>
     </div>
   );
 }
-const CreateModal = ({ isCreateModalOpen, handleOk, handleCancel}) => {
+const CreateModal = ({ isCreateModalOpen, handleOk, handleCancel, currentPage, searchParams}) => {
   const [form] = Form.useForm();
   const [budgetOptions, setBudgetOptions] = useState([]);
   const modal_footer=[
@@ -98,7 +100,7 @@ const CreateModal = ({ isCreateModalOpen, handleOk, handleCancel}) => {
     </Button>,
   ]
 
-  const { data, error, isLoading } = useSWR(['/api/budget/id-currency'], getFetcher);
+  const { data, error, isLoading } = useSWR('http://localhost:8080/api/v1/finance/budgets/id-currency', getFetcher);
   useEffect(() => {
     if (isCreateModalOpen) {
       setBudgetOptions(data); 
@@ -109,7 +111,7 @@ const CreateModal = ({ isCreateModalOpen, handleOk, handleCancel}) => {
     try {
       const values = await form.validateFields();
       
-      const newData = await postFetcher('/api/transaction', {
+      const newData = await postFetcher('http://localhost:8080/api/v1/finance/transactions', {
         id: values.transactionId,
         transactionType: values.transactionType,
         budgetId: values.Budget,
@@ -117,8 +119,7 @@ const CreateModal = ({ isCreateModalOpen, handleOk, handleCancel}) => {
         amount: values.transactionAmount,
         description: values.Description
       });
-      
-      window.location.reload();
+      mutate(`http://localhost:8080/api/v1/finance/transactions?page=${currentPage}&${searchParams}`)
 
       
       handleOk(values); 
@@ -193,6 +194,16 @@ const SearchBar = ({showModal, onSearch, setSearchParams, setCurrentPage}) => {
   const [endDate, setEndDate] = useState('');
   const [selectedBudget, setSelectedBudget] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [uniqueCurrency, setUniqueCurrency] = useState('');
+
+  const { data, error, isLoading } = useSWR('http://localhost:8080/api/v1/finance/budgets/id-currency', getFetcher);
+  useEffect(() => {
+    if (data) {
+      const currencies = data.map(item => item.currency);
+      const uniqueCurrencies = [...new Set(currencies)];
+      setUniqueCurrency(uniqueCurrencies);
+    }
+  }, [data]);
   const handleReset = () => {
     setSearchQuery('');
     setStartDate('');
@@ -245,7 +256,7 @@ const SearchBar = ({showModal, onSearch, setSearchParams, setCurrentPage}) => {
         </div>
 
         <div className="flex flex-col w-full sm:w-1/3 mb-4 sm:mb-0">
-          <label htmlFor="budget" className="block text-sm font-medium text-gray-700">Budget</label>
+          <label htmlFor="budget" className="block text-sm font-medium text-gray-700">Currency</label>
           <select
             id="budget"
             value={selectedBudget}
@@ -253,8 +264,15 @@ const SearchBar = ({showModal, onSearch, setSearchParams, setCurrentPage}) => {
             className="border rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500 w-full"
           >
             <option>Choose</option>
-            <option>2024</option>
-            <option>2023</option>
+            {uniqueCurrency && uniqueCurrency.length > 0 ? (
+              uniqueCurrency.map((currency, index) => (
+                <option key={index} value={currency}>
+                  {currency}
+                </option>
+              ))
+            ) : (
+              <option disabled>No currencies available</option>
+            )}
           </select>
         </div>
 
@@ -419,8 +437,13 @@ const FileModal = ({ isFileModalOpen, handleOk, handleCancel , id, currentPage,s
         if (file) {
           const formData = new FormData();
           formData.append('file', file);
+            const token = localStorage.getItem('token');
+  
           fetch(`${FINANCE_API_URL}/transactions/${id}/status`, {
             method: 'PUT',
+            headers: {
+              'Authorization': token ? `Bearer ${token}` : '', 
+            },
             body: formData,
           })
             .then((response) => {
@@ -428,7 +451,7 @@ const FileModal = ({ isFileModalOpen, handleOk, handleCancel , id, currentPage,s
                 message.success('File uploaded successfully');
                 handleOk();
                 form.resetFields(); 
-                mutate(`/api/transaction?page=${currentPage}&${searchParams}`);
+                mutate(`http://localhost:8080/api/v1/finance/transactions?page=${currentPage}&${searchParams}`)
               } else {
                 message.error('Failed to upload file');
               }
@@ -445,7 +468,7 @@ const FileModal = ({ isFileModalOpen, handleOk, handleCancel , id, currentPage,s
         message.error('Please fill in all required fields.');
       });
   };
-
+  
   return (
     <Modal
       title="Upload a File"

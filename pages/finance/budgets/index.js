@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import {Button, Modal, Form, Input, DatePicker, Select, InputNumber, Pagination} from 'antd'
 import { getFetcher ,postFetcher} from "../../../fetcher";
-import useSWR from "swr";
+import useSWR, {mutate} from "swr";
 
 export default function Budget() {
   const router = useRouter();
@@ -38,7 +38,7 @@ export default function Budget() {
   };
   
   const { data, error, isLoading } = useSWR(
-    `/api/budget?page=${currentPage}&${searchParams}`,
+    `http://localhost:8080/api/v1/finance/budgets?page=${currentPage}&${searchParams}`,
     getFetcher,
     {
       refreshInterval: 0,
@@ -71,6 +71,8 @@ export default function Budget() {
                 isModalOpen={isModalOpen}
                 handleOk={handleOk}
                 handleCancel={handleCancel}
+                currentPage={currentPage}
+                searchParams={searchParams}
               />
         </div>
       </Layout>
@@ -79,7 +81,7 @@ export default function Budget() {
   );
 }
 
-const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
+const CreateModal = ({ isModalOpen, handleOk, handleCancel, searchParams, currentPage }) => {
   const [form] = Form.useForm();
   const modal_footer=[
     <Button size="large" key="cancel" onClick={handleCancel}
@@ -98,28 +100,28 @@ const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
   const handleCreate = async () => {
     try {
       const values = await form.validateFields();
-      
-      const newData = await postFetcher('/api/budget', {
+      await postFetcher('http://localhost:8080/api/v1/finance/budgets', {
         id: values.budgetId,
         budgetAmount: values.initialBudget,
         currency: values.Currency,
         periodStart: values.StartDate,
         periodEnd: values.EndDate,
-        description: values.Description
+        description: values.Description,
       });
-      console.log(newData);
-      
-      window.location.reload();
 
-      
-      handleOk(values); 
+      mutate(`http://localhost:8080/api/v1/finance/budgets?page=${currentPage}&${searchParams}`);
+
       form.resetFields();
+      setErr('');
+
+      handleOk();
     } catch (error) {
-      setErr(error)
+      setErr(error);
       console.error('Failed to create Budget:', error);
     }
   };
-
+  console.log(isModalOpen);
+  
 
 
   return (
