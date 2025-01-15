@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from 'next/router';
 import { House , Search, X} from 'lucide-react';
 import { useState } from "react";
-
+import { useUserContext } from "../../../context/UserContext";
 import {Button, Modal, Form, Input, DatePicker, Select, InputNumber, Pagination} from 'antd'
 import { getFetcher ,postFetcher} from "../../../fetcher";
 import useSWR, {mutate} from "swr";
@@ -16,6 +16,8 @@ export default function Budget() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchParams, setSearchParams] = useState("");
+  const { user, setUser } = useUserContext();
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -65,7 +67,7 @@ export default function Budget() {
           </div>
           <hr></hr>
           <h1 className="text-2xl font-semibold mb-4 mt-4">Budget Management</h1>
-          <SearchBar showModal={showModal} onSearch={onSearch} setSearchParams={setSearchParams} setCurrentPage={setCurrentPage}/>
+          <SearchBar showModal={showModal} onSearch={onSearch} setSearchParams={setSearchParams} setCurrentPage={setCurrentPage} user={user} />
           <Table currentPage={data.currentPage} totalPages={data.totalPages} data={data.data} handlePageChange={handlePageChange} />
           <CreateModal
                 isModalOpen={isModalOpen}
@@ -175,7 +177,7 @@ const CreateModal = ({ isModalOpen, handleOk, handleCancel, searchParams, curren
     </Modal>
   )
 }
-const SearchBar = ({showModal, onSearch, setSearchParams, setCurrentPage}) => {
+const SearchBar = ({showModal, onSearch, setSearchParams, setCurrentPage, user}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [year, setYear] = useState('');
   const handleReset = () => {
@@ -214,9 +216,15 @@ const SearchBar = ({showModal, onSearch, setSearchParams, setCurrentPage}) => {
           <X size={15} />
           <span className="ml-2">Reset</span>
         </button>
-        <button onClick={showModal} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition mb-2 sm:mb-0">
+        {user && (user.role === "ADMIN" || user.role === "MANAGER") && (
+        <button 
+          onClick={showModal} 
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition mb-2 sm:mb-0"
+        >
           <span className="font-semibold">Add</span>
         </button>
+        )}
+        
       </div>
     </div>
   );
