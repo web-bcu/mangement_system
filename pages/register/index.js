@@ -3,6 +3,9 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { useUserContext } from "../../context/UserContext";
+import Link from "next/link";
+import { API_URL } from "../../env";
+
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -28,7 +31,7 @@ const Register = () => {
     // Handle form submission logic here
     try {
       setIsSigningUp(true);
-      const data = await axios.post("http://localhost:8080/api/v1/auth/register", formData)
+      const data = await axios.post(`${API_URL}/api/v1/auth/register`, formData)
       toast.success("Create Account Successfully!!!");
       // console.log(data);
       router.push("/login");
@@ -59,7 +62,7 @@ const Register = () => {
               htmlFor="id"
               className="block mb-2 text-sm font-medium text-gray-600"
             >
-              Employee's ID
+              Employee ID
             </label>
             <input
               type="text"
@@ -124,9 +127,9 @@ const Register = () => {
 
         <p className="mt-4 text-sm text-center text-gray-600">
           Already have an account?{" "}
-          <a href="/login" className="text-indigo-500 hover:underline">
+          <Link href="/login" className="text-indigo-500 hover:underline">
             Login
-          </a>
+          </Link>
         </p>
       </div>
     </div>

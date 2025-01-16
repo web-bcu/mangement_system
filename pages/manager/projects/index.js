@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
+import { API_URL } from '../../../env';
 
 export default function DepartmentProject() {
     const { user } = useUserContext();
@@ -24,7 +25,7 @@ export default function DepartmentProject() {
         const token = localStorage.getItem("token");
         const dataToPass = { departmentId: user?.department }
         try {
-            const response = await fetch("http://localhost:8080/api/v1/projects/department", {
+            const response = await fetch(`${API_URL}/api/v1/projects/department`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -72,7 +73,7 @@ export default function DepartmentProject() {
 
     const handleFormSubmit = async (values) => {
         const token = localStorage.getItem("token");
-        const url = `http://localhost:8080/api/v1/projects`
+        const url = `${API_URL}/api/v1/projects`
 
         const method = isEditMode ? "PUT" : "POST";
         // console.log(dayjs(values.endDate).format("YYYY-MM-DD"));
@@ -241,7 +242,7 @@ const CreateEditProjectModal = ({ isModalOpen, isEditMode, project, handleCancel
     const fetchDepartments = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch("http://localhost:8080/api/v1/departments", {
+            const response = await fetch(`${API_URL}/api/v1/departments`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,

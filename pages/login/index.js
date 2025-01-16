@@ -5,6 +5,9 @@ import Head from "next/head";
 import { useUserContext } from "../../context/UserContext";
 import { toast } from "sonner";
 import { useRouter } from "next/router";
+import Link from "next/link";
+import { API_URL } from "../../env";
+
 export default function Login() {
     const [employeeCode, setEmployeeCode] = useState('');
     const [password, setPassword] = useState('');
@@ -14,7 +17,7 @@ export default function Login() {
     const handleSubmit = async(e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:8080/api/v1/auth/login', {
+            const response = await fetch(`${API_URL}/api/v1/auth/login`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -33,7 +36,7 @@ export default function Login() {
               router.push("/");
             }
       
-            //   const userResponse = await fetch(`http://localhost:8080/api/v1/users/${employeeCode}`, {
+            //   const userResponse = await fetch(`${API_URL}/api/v1/users/${employeeCode}`, {
             //     method: 'GET',
             //     headers: {
             //       'Authorization': `Bearer ${token}`,
@@ -110,10 +113,10 @@ export default function Login() {
                     </button>
                     </form>
                     <p className="mt-4 text-sm text-center text-gray-600">
-                    Haven't had account yet?{' '}
-                    <a href="/register" className="text-indigo-500 hover:underline">
+                    Have not had account yet?{' '}
+                    <Link href="/register" className="text-indigo-500 hover:underline">
                         Sign Up
-                    </a>
+                    </Link>
                     </p>
                 </div>
             </div>

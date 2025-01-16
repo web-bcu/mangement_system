@@ -1,55 +1,7 @@
-// import axios from "axios";
-// import { useRouter } from "next/router";
-// import { createContext, useContext, useEffect, useState } from "react";
-
-// export const UserContext = createContext({});
-
-// export function useUserContext() {
-//     return useContext(UserContext);
-// }
-
-// export default function UserContextProvider({children}) {
-//     const [user, setUser] = useState(null)
-//     const router = useRouter()
-//     const fetchUser = async () => {
-//         const storedToken = localStorage.getItem("token");
-//         try {
-//             if (!storedToken && router.pathname !== "/login" && router.pathname !== "/register") {
-//                 router.push("/login");
-//             }
-//             else if (user == null) {
-//                 const id = await axios.post("http://localhost:8080/api/v1/auth/profile", {
-//                     token: storedToken
-//                 })
-//                 const userResponse = await fetch(`http://localhost:8080/api/v1/users/${id}`, {
-//                     method: 'GET',
-//                     headers: {
-//                       'Authorization': `Bearer ${storedToken}`,
-//                     },
-//                 });
-
-//                 const userData = await userResponse.json();
-//                 setUser(userData);
-//             }
-//         } catch (error) {
-//             console.log(error);
-//         }
-//     }
-
-//     useEffect(() => {
-//         fetchUser()
-//     }, [user])
-
-//     return (
-//         <UserContext.Provider value={{user, setUser}}>
-//             {children}
-//         </UserContext.Provider>
-//     )
-// }
-
 import axios from "axios";
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
+import { API_URL } from "../env";
 
 export const UserContext = createContext({});
 
@@ -74,7 +26,7 @@ export default function UserContextProvider({ children }) {
             }
 
             if (!user && storedToken) {
-                const response = await axios.post("http://localhost:8080/api/v1/auth/profile", {
+                const response = await axios.post(`${API_URL}/api/v1/auth/profile`, {
                     token: storedToken,
                 });
 
@@ -84,7 +36,7 @@ export default function UserContextProvider({ children }) {
                 // console.log(userId);
                 if (!userId) throw new Error("Invalid token or user ID not found");
 
-                const userResponse = await fetch(`http://localhost:8080/api/v1/users/${userId}`, {
+                const userResponse = await fetch(`${API_URL}/api/v1/users/${userId}`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${storedToken}`,

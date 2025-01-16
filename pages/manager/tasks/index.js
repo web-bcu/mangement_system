@@ -3,10 +3,10 @@ import { useUserContext } from "../../../context/UserContext"
 import Layout from "../../../components/Layout";
 import { Eye, CircleX, CheckCircle } from "lucide-react";
 import { Button, Modal, Form, Input, DatePicker, Select } from 'antd'
-import { data } from "./data_demo";
 import "../../../styles/Home.module.css"
 import { toast } from "sonner";
 import dayjs from "dayjs";
+import { API_URL } from "../../../env";
 
 
 export default function EmployeeTasksManagement() {
@@ -34,7 +34,7 @@ export default function EmployeeTasksManagement() {
         status: false
       }
 
-      const response = await fetch("http://localhost:8080/api/v1/tasks", {
+      const response = await fetch(`${API_URL}/api/v1/tasks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +57,7 @@ export default function EmployeeTasksManagement() {
   const deleteTask = async (taskId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/v1/tasks/${taskId}`, {
+      const response = await fetch(`${API_URL}/api/v1/tasks/${taskId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -75,7 +75,7 @@ export default function EmployeeTasksManagement() {
   const updateTask = async (taskId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/v1/tasks/${taskId}/status`, {
+      const response = await fetch(`${API_URL}/api/v1/tasks/${taskId}/status`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -98,7 +98,7 @@ export default function EmployeeTasksManagement() {
     const token = localStorage.getItem("token");
     // const dataToPass = { departmentId: user?.department }
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/tasks/department/${user?.department}`, {
+      const response = await fetch(`${API_URL}/api/v1/tasks/department/${user?.department}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -181,7 +181,7 @@ const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
     const token = localStorage.getItem("token");
     const dataToPass = { department: user?.department }
     try {
-      const response = await fetch("http://localhost:8080/api/v1/users/department", {
+      const response = await fetch(`${API_URL}/api/v1/users/department`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

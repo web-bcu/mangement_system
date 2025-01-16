@@ -1,8 +1,8 @@
 import { useUserContext } from "../../../context/UserContext";
 import Layout from "../../../components/Layout";
-import { data } from "./data_demo";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { API_URL } from "../../../env";
 
 
 export default function ManagerScreen() {
@@ -16,7 +16,7 @@ export default function ManagerScreen() {
     const token = localStorage.getItem("token");
     const dataToPass = { department: user?.department }
     try {
-      const response = await fetch("http://localhost:8080/api/v1/users/department", {
+      const response = await fetch(`${API_URL}/api/v1/users/department`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

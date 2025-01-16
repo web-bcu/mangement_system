@@ -2,11 +2,11 @@ import { useEffect, useState } from "react"
 import { useUserContext } from "../../../context/UserContext"
 import Layout from "../../../components/Layout";
 import { Eye, CircleX, CheckCircle } from "lucide-react";
-import { Button, Modal, Form, Input, DatePicker, Select } from 'antd'
-import { data } from "./data_demo";
+// import { Button, Modal, Form, Input, DatePicker, Select } from 'antd'
 import "../../../styles/Home.module.css"
 import { toast } from "sonner";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
+import { API_URL } from "../../../env";
 
 
 export default function EmployeeTasksManagement() {
@@ -22,7 +22,7 @@ export default function EmployeeTasksManagement() {
   const deleteTask = async (taskId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/v1/tasks/${taskId}`, {
+      const response = await fetch(`${API_URL}/api/v1/tasks/${taskId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -40,7 +40,7 @@ export default function EmployeeTasksManagement() {
   const updateTask = async (taskId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/v1/tasks/${taskId}/status`, {
+      const response = await fetch(`${API_URL}/api/v1/tasks/${taskId}/status`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ export default function EmployeeTasksManagement() {
     const token = localStorage.getItem("token");
     // const dataToPass = { departmentId: user?.department }
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/tasks/${user?.id}`, {
+      const response = await fetch(`${API_URL}/api/v1/tasks/${user?.id}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

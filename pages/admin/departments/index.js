@@ -7,6 +7,7 @@ import { useUserContext } from '../../../context/UserContext';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import { CircleX } from "lucide-react";
+import { API_URL } from '../../../env';
 
 export default function Departments() {
     const { user } = useUserContext();
@@ -19,7 +20,7 @@ export default function Departments() {
     const fetchDepartments = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch("http://localhost:8080/api/v1/departments", {
+            const response = await fetch(`${API_URL}/api/v1/departments`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -40,7 +41,7 @@ export default function Departments() {
         const token = localStorage.getItem("token");
         const dataToPass = { role: "MANAGER" }
         try {
-            const response = await fetch("http://localhost:8080/api/v1/users/role", {
+            const response = await fetch(`${API_URL}/api/v1/users/role`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -63,7 +64,7 @@ export default function Departments() {
     const deleteDepartment = async (departmentId) => {
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:8080/api/v1/departments/${departmentId}`, {
+            const response = await fetch(`${API_URL}/api/v1/departments/${departmentId}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -188,7 +189,7 @@ const Table = ({ showModal, departments, managers, deleteDepartment }) => {
         try {
             const token = localStorage.getItem("token");
             console.log(departmentUpdate);
-            const response = await fetch("http://localhost:8080/api/v1/departments/update", {
+            const response = await fetch(`${API_URL}/api/v1/departments/update`, {
                 method: "PUT",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -261,7 +262,7 @@ const CreateModal = ({ isModalOpen, handleOk, handleCancel }) => {
         try {
             // Send the department data to the backend or API
             const token = localStorage.getItem("token")
-            const response = await fetch("http://localhost:8080/api/v1/departments", {
+            const response = await fetch(`${API_URL}/api/v1/departments`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,

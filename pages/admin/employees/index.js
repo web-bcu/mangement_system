@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import Layout from "../../../components/Layout";
 import { useUserContext } from "../../../context/UserContext";
-import { data } from "../../manager/employees/data_demo";
 import { Button, Form, Input, InputNumber, Modal, Select } from "antd";
-import axios from "axios";
+// import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/router";
+import { API_URL } from "../../../env";
 
 export default function AdminScreen() {
   const { user } = useUserContext();
@@ -20,7 +20,7 @@ export default function AdminScreen() {
   const fetchAllUsers = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("http://localhost:8080/api/v1/users", {
+      const response = await fetch(`${API_URL}/api/v1/users`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -40,7 +40,7 @@ export default function AdminScreen() {
   const fetchDepartments = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("http://localhost:8080/api/v1/departments", {
+      const response = await fetch(`${API_URL}/api/v1/departments`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -146,7 +146,7 @@ const Table = ({ userData }) => {
   const updateUser = async (userUpdate) => {
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch("http://localhost:8080/api/v1/users/update", {
+      const response = await fetch(`${API_URL}/api/v1/users/update`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -187,7 +187,7 @@ const Table = ({ userData }) => {
         <tbody>
           {userData.map((user, index) => (
 
-            <UserForm userData={user} onSave={updateUser} />
+            <UserForm key={index} userData={user} onSave={updateUser} />
           ))}
         </tbody>
       </table>
@@ -216,7 +216,7 @@ const UserForm = ({ userData, onSave }) => {
   const fetchDepartments = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("http://localhost:8080/api/v1/departments", {
+      const response = await fetch(`${API_URL}/api/v1/departments`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -273,8 +273,8 @@ const UserForm = ({ userData, onSave }) => {
             style={{ width: "100%" }}
           >
             {/* Add the options for departments */}
-            {departments && departments.map((department) =>
-              <Option value={department.departmentId}>{department.departmentName}</Option>
+            {departments && departments.map((department, index) =>
+              <Select.Option key={index} value={department.departmentId}>{department.departmentName}</Select.Option>
             )}
           </Select>
         ) : (
@@ -291,9 +291,9 @@ const UserForm = ({ userData, onSave }) => {
             style={{ width: "100%" }}
           >
             {/* Add the options for departments */}
-            <Option value="USER">User</Option>
-            <Option value="MANAGER">Manager</Option>
-            <Option value="ADMIN">Admin</Option>
+            <Select.Option value="USER">User</Select.Option>
+            <Select.Option value="MANAGER">Manager</Select.Option>
+            <Select.Option value="ADMIN">Admin</Select.Option>
             {/* Add more options as needed */}
           </Select>
         ) : (
