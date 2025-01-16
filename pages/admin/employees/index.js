@@ -129,7 +129,7 @@ const SearchBar = ({ searchName, setSearchName, searchID, setSearchID, searchRol
       value={searchDepartment}
       onChange={e => setSearchDepartments(e.target.value)}
     >
-      <option value="">All roles</option>
+      <option value="">All departments</option>
       {departments?.map(department => (
         <option key={department.departmentId} value={department.departmentId}>{department.departmentName}</option>
       ))}

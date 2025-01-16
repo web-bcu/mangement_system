@@ -1,4 +1,4 @@
-import { Search, X } from 'lucide-react';
+import { CircleX, Search, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import Layout from '../../../components/Layout';
 import Head from 'next/head';
@@ -97,6 +97,24 @@ export default function ProjectsPage() {
     }
   };
 
+  const deleteProject = async (projectId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:8080/api/v1/projects/${projectId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
+
+      if (!response.ok) throw new Error("Failed to delete project");
+      fetchProjects();
+    } catch (error) {
+      console.error("Error saving project:", error);
+      toast.error("Failed to save project!");
+    }
+  }
+
   if (user?.role !== "ADMIN") {
     return (
       <Layout>
@@ -120,8 +138,8 @@ export default function ProjectsPage() {
           <Button className="mb-4" onClick={() => showModal()}>
             Create Project
           </Button>
-          <SearchBar searchID={searchID} setSearchID={setSearchID} searchName={searchName} setSearchName={setSearchName}/>
-          <ProjectsTable projects={filteredProjects} onEdit={showModal} />
+          <SearchBar searchID={searchID} setSearchID={setSearchID} searchName={searchName} setSearchName={setSearchName} />
+          <ProjectsTable projects={filteredProjects} onEdit={showModal} deleteProject={deleteProject}/>
           <CreateEditProjectModal
             isModalOpen={isModalOpen}
             isEditMode={isEditMode}
@@ -170,7 +188,7 @@ const SearchBar = ({ searchName, setSearchName, searchID, setSearchID }) => (
   </div>
 );
 
-const ProjectsTable = ({ projects, onEdit }) => (
+const ProjectsTable = ({ projects, onEdit, deleteProject }) => (
   <div className="overflow-x-auto">
     <table className="table-auto w-full text-sm text-left border-collapse border border-gray-300">
       <thead className="bg-gray-100">
@@ -193,10 +211,14 @@ const ProjectsTable = ({ projects, onEdit }) => (
             <td className="border px-4 py-2">{project.endDate}</td>
             <td className="border px-4 py-2">{project.departmentId}</td>
             <td className="border px-4 py-2">{project.description}</td>
-            <td className="border px-4 py-2">
+            <td className="flex gap-2 items-center justify-start border px-4 py-2">
               <Button size="small" onClick={() => onEdit(project)}>
                 Edit
               </Button>
+              <div className="rounded-full">
+                {/* <button className=""><Eye className="w-8 h-8" /></button> */}
+                <button><CircleX className="text-[#de0d0d] w-8 h-10" onClick={() => deleteProject(project.projectId)} /></button>
+              </div>
             </td>
           </tr>
         ))}
